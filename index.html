@@ -57,6 +57,7 @@ img.flag {
 
 <div id="list" class="grid"></div>
 
+
 <script>
 const list = document.getElementById("list");
 
@@ -110,12 +111,15 @@ function render(data) {
 
     let flagHTML = "";
 
-    // ✅ England special case
+    // ✅ England flag fix
     if (player.team === "England") {
-      flagHTML = `<img class="flag" src="https://flagcdn.com/w40/gb
+      flagHTML = `<img class="flag" src="https://flag;
+    } else {
       const code = countryCodes[player.team];
       if (code) {
-        flagHTML = `<img class="flag" src="https://flagcdn.com/w40/${code}.pngiv.innerHTML = `
+        flagHTML = `<img class="flag" src="https://flagcdn.com/w40    }
+
+    div.innerHTML = `
       <div class="name">${player.name}</div>
       <div class="team">${flagHTML} ${player.team}</div>
     `;
