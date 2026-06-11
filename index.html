@@ -13,11 +13,8 @@ body {
   background: #f5f7fb;
 }
 
-h1 {
-  text-align: center;
-}
+h1 { text-align: center; }
 
-/* Prize box */
 .prizes {
   background: white;
   padding: 15px;
@@ -26,7 +23,6 @@ h1 {
   margin-bottom: 25px;
 }
 
-/* Groups layout */
 .groups {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -46,7 +42,6 @@ h1 {
   padding-bottom: 5px;
 }
 
-/* Team rows */
 .team {
   display: flex;
   align-items: center;
@@ -57,6 +52,11 @@ h1 {
 .player {
   font-weight: bold;
   min-width: 90px;
+}
+
+.stats {
+  color: #555;
+  font-size: 13px;
 }
 
 img.flag {
@@ -74,18 +74,12 @@ img.flag {
 
 <div class="prizes">
   <h2>💰 Prize Breakdown</h2>
-
-  <p><strong>Main Prizes:</strong></p>
   <ul>
     <li>🥇 Winner – £75</li>
     <li>🥈 Runner-up – £40</li>
     <li>🥉 Losing Semi-Finalists – £15 each</li>
-  </ul>
-
-  <p><strong>Wooden Spoon Awards:</strong></p>
-  <ul>
-    <li>📉 Most goals conceded (group stage) – £15</li>
-    <li>🟥 Most red cards (yellow cards tie-break) – £15</li>
+    <li>📉 Most goals conceded – £15</li>
+    <li>🟥 Most red cards – £15</li>
     <li>⚽ Fewest goals scored – £15</li>
   </ul>
 </div>
@@ -125,26 +119,37 @@ const groupMap = {
   "Group L": ["England","Croatia","Ghana","Panama"]
 };
 
-// ✅ Load CSV
+// ✅ LOAD CSV
 fetch("sweepstake.csv")
   .then(res => res.text())
   .then(text => {
+
     const rows = text.trim().split(/\r?\n/);
 
     const data = rows.slice(1).map(row => {
-      const [name, team] = row.split(/[;,]/);
+      const parts = row.split(/[;,]/);
+
+      const name = parts[0];
+      const team = parts[1];
+      const goals = parseInt(parts[2]) || 0;
+      const yellows = parseInt(parts[3]) || 0;
+      const reds = parseInt(parts[4]) || 0;
+
       if (!name || !team) return null;
 
       return {
         name: name.trim(),
-        team: team.trim()
+        team: team.trim(),
+        goals,
+        yellows,
+        reds
       };
     }).filter(Boolean);
 
     renderGroups(data);
   });
 
-// ✅ SAFE RENDER (no innerHTML strings)
+// ✅ RENDER GROUPS (SAFE)
 function renderGroups(data) {
 
   groupsContainer.innerHTML = "";
@@ -165,14 +170,13 @@ function renderGroups(data) {
       const row = document.createElement("div");
       row.className = "team";
 
-      // player name
+      // Player name
       const playerSpan = document.createElement("span");
       playerSpan.className = "player";
       playerSpan.textContent = player ? player.name : "-";
-
       row.appendChild(playerSpan);
 
-      // flag
+      // Flag
       const code = countryCodes[teamName];
       if (code) {
         const img = document.createElement("img");
@@ -181,10 +185,17 @@ function renderGroups(data) {
         row.appendChild(img);
       }
 
-      // team name
+      // Team + stats
       const teamSpan = document.createElement("span");
-      teamSpan.textContent = teamName;
 
+      let stats = "";
+      if (player) {
+        if (player.goals) stats += player.goals + " ⚽ ";
+        if (player.yellows) stats += player.yellows + " 🟨 ";
+        if (player.reds) stats += player.reds + " 🟥";
+      }
+
+      teamSpan.textContent = teamName + (stats ? " " + stats : "");
       row.appendChild(teamSpan);
 
       groupDiv.appendChild(row);
