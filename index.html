@@ -60,6 +60,7 @@ img.flag {
 <script>
 const list = document.getElementById("list");
 
+// ✅ Country → flag codes
 const countryCodes = {
   "Brazil":"br","France":"fr","Argentina":"ar","Spain":"es","Germany":"de",
   "Portugal":"pt","Netherlands":"nl","Belgium":"be","Italy":"it",
@@ -74,14 +75,20 @@ const countryCodes = {
   "Zambia":"zm","Uganda":"ug"
 };
 
-fetch("./sweepstake.csv")
-  .then(response => response.text())
+// ✅ IMPORTANT: FULL PATH (this was your issue)
+fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
+  .then(response => {
+    console.log("Status:", response.status); // debug
+    return response.text();
+  })
   .then(text => {
+
     text = text.replace(/^\uFEFF/, "");
     const rows = text.trim().split(/\r?\n/);
 
     const data = rows.slice(1).map(row => {
       const cols = row.split(/[;,]/);
+
       const name = cols[0];
       const team = cols[1];
 
@@ -97,9 +104,10 @@ fetch("./sweepstake.csv")
   })
   .catch(err => {
     console.error(err);
-    list.innerHTML = "<p style='color:red;'>❌ CSV failed to load</p>";
+    list.innerHTML = "<p style='color:red;'>❌ CSV FAILED</p>";
   });
 
+// ✅ Render cards
 function render(data) {
   list.innerHTML = "";
 
@@ -109,11 +117,12 @@ function render(data) {
 
     let flagHTML = "";
 
+    // ✅ England fix
     if (player.team === "England") {
-      flagHTML = `<img class="flag" src="https://flagcdn.com else {
+      flagHTML = `<img class="flag" src="https://flagcdn.com/w40/ {
       const code = countryCodes[player.team];
       if (code) {
-        flagHTML = `<img class="flag" src="https://flagcdn.com/w40/${code    div.innerHTML = `
+        flagHTML = `<img class="flag" src="https://flagcdn.com/w40/${code}.  div.innerHTML = `
       <div class="name">${player.name}</div>
       <div class="team">${flagHTML} ${player.team}</div>
     `;
