@@ -5,47 +5,68 @@
 <title>Stratford Haven World Cup Sweepstake</title>
 
 <style>
+
+/* ✅ DARK THEME */
 body {
   font-family: Arial;
   max-width: 1200px;
   margin: auto;
   padding: 20px;
-  background: #f5f7fb;
+  background: linear-gradient(135deg, #0a1f3d, #000);
+  color: #f4f6fb;
 }
 
-h1 { text-align: center; }
-
-.prizes {
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+/* ✅ HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
   margin-bottom: 25px;
 }
 
+.header img {
+  height: 60px;
+}
+
+h1 {
+  margin: 0;
+}
+
+/* ✅ CARDS */
+.prizes, .group {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+/* ✅ PRIZES */
+.prizes {
+  margin-bottom: 25px;
+}
+
+/* ✅ GROUP GRID */
 .groups {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
 }
 
-.group {
-  background: white;
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
+/* ✅ GROUP TITLE */
 .group h3 {
   margin-top: 0;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid rgba(255,255,255,0.2);
   padding-bottom: 5px;
 }
 
+/* ✅ TEAM ROWS */
 .team {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin: 8px 0;
 }
 
@@ -54,39 +75,52 @@ h1 { text-align: center; }
   min-width: 140px;
 }
 
+/* ✅ STATS */
 .stats {
-  color: #555;
-  font-size: 13px;
+  color: #90caf9;
 }
 
+/* ✅ FLAGS */
 img.flag {
   width: 24px;
   height: 18px;
   border-radius: 3px;
 }
+
+/* ✅ HOVER EFFECT (nice touch) */
+.group:hover {
+  transform: translateY(-3px);
+  transition: 0.2s;
+}
+
 </style>
 
 </head>
 
 <body>
 
-<h1>🏆 World Cup Sweepstake</h1>
+<!-- ✅ HEADER WITH LOGO -->
+<div class="header">
+  <img src="logo.png" alt="Club Logo">
+  <h1>🏆 Stratford Haven Sweepstake</h1>
+</div>
 
+<!-- ✅ PRIZES -->
 <div class="prizes">
   <h2>💰 Prize Breakdown</h2>
 
-  <p><strong>Main Prizes:</strong></p>
+  <p><strong>Main Prizes</strong></p>
   <ul>
     <li>🥇 Winner – £75</li>
     <li>🥈 Runner-up – £40</li>
-    <li>🥉 Losing Semi-Finalists – £15 each</li>
+    <li>🥉 Semi-Finalists – £15 each</li>
   </ul>
 
-  <p><strong>Wooden Spoon Awards:</strong></p>
+  <p><strong>Wooden Spoon</strong></p>
   <ul>
-    <li>📉 Most goals conceded (group stage) – £15</li>
-    <li>🟥 Most red cards (yellow cards tie-break) – £15</li>
-    <li>⚽ Fewest goals scored – £15</li>
+    <li>📉 Most goals conceded – £15</li>
+    <li>🟥 Most red cards – £15</li>
+    <li>⚽ Fewest goals – £15</li>
   </ul>
 </div>
 
@@ -109,7 +143,6 @@ const countryCodes = {
   "New Zealand":"nz"
 };
 
-// ✅ FIFA Groups
 const groupMap = {
   "Group A": ["Mexico","South Africa","South Korea","Czechia"],
   "Group B": ["Canada","Bosnia and Herzegovina","Qatar","Switzerland"],
@@ -125,7 +158,7 @@ const groupMap = {
   "Group L": ["England","Croatia","Ghana","Panama"]
 };
 
-// ✅ LOAD CSV (with cache busting)
+// ✅ LOAD CSV
 fetch("sweepstake.csv?v=" + Date.now())
   .then(res => res.text())
   .then(text => {
@@ -135,27 +168,23 @@ fetch("sweepstake.csv?v=" + Date.now())
     const data = rows.slice(1).map(row => {
       const parts = row.split(/[;,]/);
 
-      const name1 = parts[0];
-      const name2 = parts[1];
-      const team = parts[2];
-      const goals = parseInt(parts[3]) || 0;
-      const yellows = parseInt(parts[4]) || 0;
-      const reds = parseInt(parts[5]) || 0;
-
-      if (!name1 || !team) return null;
-
       return {
-        name1: name1.trim(),
-        name2: name2 ? name2.trim() : "",
-        team: team.trim(),
-        goals,
-        yellows,
-        reds
+        name1: parts[0]?.trim(),
+        name2: parts[1]?.trim() || "",
+        team: parts[2]?.trim(),
+        goals: parseInt(parts[3]) || 0,
+        yellows: parseInt(parts[4]) || 0,
+        reds: parseInt(parts[5]) || 0
       };
-    }).filter(Boolean);
+    }).filter(p => p.name1 && p.team);
 
     renderGroups(data);
   });
+
+// ✅ FORMAT NAMES
+function formatName(p) {
+  return p.name2 ? p.name1 + ", " + p.name2 : p.name1;
+}
 
 // ✅ RENDER GROUPS
 function renderGroups(data) {
@@ -178,22 +207,11 @@ function renderGroups(data) {
       const row = document.createElement("div");
       row.className = "team";
 
-      // ✅ PLAYER NAMES
       const playerSpan = document.createElement("span");
       playerSpan.className = "player";
-
-      if (player) {
-        playerSpan.textContent =
-          player.name2
-            ? player.name1 + ", " + player.name2
-            : player.name1;
-      } else {
-        playerSpan.textContent = "-";
-      }
-
+      playerSpan.textContent = player ? formatName(player) : "-";
       row.appendChild(playerSpan);
 
-      // ✅ FLAG
       const code = countryCodes[teamName];
       if (code) {
         const img = document.createElement("img");
@@ -202,7 +220,6 @@ function renderGroups(data) {
         row.appendChild(img);
       }
 
-      // ✅ TEAM + STATS
       const teamSpan = document.createElement("span");
 
       let stats = "";
@@ -212,7 +229,8 @@ function renderGroups(data) {
         if (player.reds) stats += player.reds + "x🟥";
       }
 
-      teamSpan.textContent = teamName + (stats ? " " + stats : "");
+      teamSpan.innerHTML = teamName +
+        (stats ? '<span class="stats"> ' + stats + '</span>' : '');
 
       row.appendChild(teamSpan);
       groupDiv.appendChild(row);
