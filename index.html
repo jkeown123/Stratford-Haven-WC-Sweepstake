@@ -60,7 +60,6 @@ img.flag {
 <script>
 const list = document.getElementById("list");
 
-// ✅ Country → flag codes
 const countryCodes = {
   "Brazil":"br","France":"fr","Argentina":"ar","Spain":"es","Germany":"de",
   "Portugal":"pt","Netherlands":"nl","Belgium":"be","Italy":"it",
@@ -75,20 +74,14 @@ const countryCodes = {
   "Zambia":"zm","Uganda":"ug"
 };
 
-// ✅ LOAD CSV
 fetch("./sweepstake.csv")
   .then(response => response.text())
   .then(text => {
-
-    // remove Excel BOM
     text = text.replace(/^\uFEFF/, "");
-
-    // split rows (works on Windows + Mac)
     const rows = text.trim().split(/\r?\n/);
 
     const data = rows.slice(1).map(row => {
-      const cols = row.split(/[;,]/); // handles comma OR semicolon
-
+      const cols = row.split(/[;,]/);
       const name = cols[0];
       const team = cols[1];
 
@@ -107,7 +100,6 @@ fetch("./sweepstake.csv")
     list.innerHTML = "<p style='color:red;'>❌ CSV failed to load</p>";
   });
 
-// ✅ RENDER CARDS
 function render(data) {
   list.innerHTML = "";
 
@@ -117,11 +109,11 @@ function render(data) {
 
     let flagHTML = "";
 
-    // ✅ England fix (proper flag)
     if (player.team === "England") {
-      flagHTML = `<img class="flag" src="https://flagcdn.com/w40/gb-eng.pngonst code = countryCodes[player.team];
+      flagHTML = `<img class="flag" src="https://flagcdn.com else {
+      const code = countryCodes[player.team];
       if (code) {
-        flagHTML = `<img class="flag" src="https://flagcdn.com/w40/${code}.pngiv.innerHTML = `
+        flagHTML = `<img class="flag" src="https://flagcdn.com/w40/${code    div.innerHTML = `
       <div class="name">${player.name}</div>
       <div class="team">${flagHTML} ${player.team}</div>
     `;
