@@ -37,8 +37,8 @@ h1 { text-align: center; }
 }
 
 .group h3 {
-  border-bottom: 2px solid #eee;
   margin-top: 0;
+  border-bottom: 2px solid #eee;
   padding-bottom: 5px;
 }
 
@@ -46,7 +46,7 @@ h1 { text-align: center; }
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 6px 0;
+  margin: 8px 0;
 }
 
 .player {
@@ -65,6 +65,7 @@ img.flag {
   border-radius: 3px;
 }
 </style>
+
 </head>
 
 <body>
@@ -89,15 +90,11 @@ img.flag {
   </ul>
 </div>
 
-<!-- ✅ LIVE LEADERBOARD -->
-<div id="leaderboard" class="prizes"></div>
-
 <div id="groups" class="groups"></div>
 
 <script>
 const groupsContainer = document.getElementById("groups");
 
-// ✅ FLAGS
 const countryCodes = {
   "USA":"us","Mexico":"mx","Canada":"ca","Panama":"pa","Haiti":"ht","Curaçao":"cw",
   "Argentina":"ar","Brazil":"br","Colombia":"co","Ecuador":"ec","Paraguay":"py","Uruguay":"uy",
@@ -112,7 +109,7 @@ const countryCodes = {
   "New Zealand":"nz"
 };
 
-// ✅ FIFA GROUPS
+// ✅ FIFA Groups
 const groupMap = {
   "Group A": ["Mexico","South Africa","South Korea","Czechia"],
   "Group B": ["Canada","Bosnia and Herzegovina","Qatar","Switzerland"],
@@ -128,7 +125,7 @@ const groupMap = {
   "Group L": ["England","Croatia","Ghana","Panama"]
 };
 
-// ✅ LOAD CSV (no cache)
+// ✅ LOAD CSV (with cache busting)
 fetch("sweepstake.csv?v=" + Date.now())
   .then(res => res.text())
   .then(text => {
@@ -138,26 +135,29 @@ fetch("sweepstake.csv?v=" + Date.now())
     const data = rows.slice(1).map(row => {
       const parts = row.split(/[;,]/);
 
-      return {
-        name1: parts[0]?.trim(),
-        name2: parts[1]?.trim() || "",
-        team: parts[2]?.trim(),
-        goals: parseInt(parts[3]) || 0,
-        yellows: parseInt(parts[4]) || 0,
-        reds: parseInt(parts[5]) || 0
-      };
-    }).filter(p => p.name1 && p.team);
+      const name1 = parts[0];
+      const name2 = parts[1];
+      const team = parts[2];
+      const goals = parseInt(parts[3]) || 0;
+      const yellows = parseInt(parts[4]) || 0;
+      const reds = parseInt(parts[5]) || 0;
 
-    renderLeaderboard(data);
+      if (!name1 || !team) return null;
+
+      return {
+        name1: name1.trim(),
+        name2: name2 ? name2.trim() : "",
+        team: team.trim(),
+        goals,
+        yellows,
+        reds
+      };
+    }).filter(Boolean);
+
     renderGroups(data);
   });
 
-// ✅ FORMAT NAMES
-function formatName(p) {
-  return p.name2 ? p.name1 + ", " + p.name2 : p.name1;
-}
-
-// ✅ GROUPS
+// ✅ RENDER GROUPS
 function renderGroups(data) {
 
   groupsContainer.innerHTML = "";
@@ -178,13 +178,22 @@ function renderGroups(data) {
       const row = document.createElement("div");
       row.className = "team";
 
-      // names
+      // ✅ PLAYER NAMES
       const playerSpan = document.createElement("span");
       playerSpan.className = "player";
-      playerSpan.textContent = player ? formatName(player) : "-";
+
+      if (player) {
+        playerSpan.textContent =
+          player.name2
+            ? player.name1 + ", " + player.name2
+            : player.name1;
+      } else {
+        playerSpan.textContent = "-";
+      }
+
       row.appendChild(playerSpan);
 
-      // flag
+      // ✅ FLAG
       const code = countryCodes[teamName];
       if (code) {
         const img = document.createElement("img");
@@ -193,7 +202,7 @@ function renderGroups(data) {
         row.appendChild(img);
       }
 
-      // team + stats
+      // ✅ TEAM + STATS
       const teamSpan = document.createElement("span");
 
       let stats = "";
@@ -204,8 +213,8 @@ function renderGroups(data) {
       }
 
       teamSpan.textContent = teamName + (stats ? " " + stats : "");
-      row.appendChild(teamSpan);
 
+      row.appendChild(teamSpan);
       groupDiv.appendChild(row);
     });
 
