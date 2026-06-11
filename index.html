@@ -120,3 +120,65 @@ const countryCodes = {
 "Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
 };
 
+// ✅ LOAD CSV AUTOMATICALLY
+fetch("sweepstake.csv")
+  .then(res => res.text())
+  .then(text => {
+    const rows = text.trim().split("\n");
+
+    data = rows.slice(1).map(row => {
+      const [name, team] = row.split(",");
+      if (!name || !team) return null;
+
+      return {
+        name: name.trim(),
+        team: team.trim(),
+        code: countryCodes[team.trim()] || ""
+      };
+    }).filter(Boolean);
+
+    render();
+  });
+
+function render() {
+  const value = search.value.toLowerCase();
+
+  list.innerHTML = "";
+  draw.innerHTML = "";
+
+  const filtered = data.filter(p =>
+    p.name.toLowerCase().includes(value) ||
+    p.team.toLowerCase().includes(value)
+  );
+
+  // ✅ DRAW OVERVIEW
+  data.forEach(player => {
+    const el = document.createElement("div");
+    el.className = "draw-item";
+    el.innerHTML = `${player.name} - ${player.team}`;
+    draw.appendChild(el);
+  });
+
+  // ✅ CARDS
+  filtered.forEach(player => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    const flagHTML = player.code
+      ? `<img class="flag" src="https://flagcdn.com/w40/${player.code}.png`">`
+      : "";
+
+    div.innerHTML = `
+      <div class="name">${player.name}</div>
+      <div class="team">${flagHTML} ${player.team}</div>
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+search.addEventListener("input", render);
+</script>
+
+</body>
+</html>
