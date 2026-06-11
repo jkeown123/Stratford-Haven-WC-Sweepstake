@@ -1,129 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>World Cup Sweepstake</title>
-  <style>
-    body { font-family: Arial; max-width: 1000px; margin: auto; padding: 20px; background:#f5f7fb; }
-    h1 { text-align: center; }
-    button { padding: 12px 18px; font-size: 16px; margin-bottom: 20px; cursor: pointer; border-radius:8px; border:none; background:#007bff; color:white; }
-    input { width: 100%; padding: 12px; margin: 10px 0 20px; font-size: 16px; border-radius:8px; border:1px solid #ccc; }
+  <meta charset="UTF-8">
+  <title>World Cup Sweepstake</title>
+  <style>
+    body { font-family: Arial; max-width: 1000px; margin: auto; padding: 20px; background:#f5f7fb; }
+    h1 { text-align: center; }
+    input { width: 100%; padding: 12px; margin: 10px 0; font-size: 16px; border-radius:8px; border:1px solid #ccc; }
 
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
 
+    .name { font-weight: bold; margin-bottom: 8px; }
+    .team { display:flex; align-items:center; gap:8px; }
 
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
-    }
-    .card:hover { transform: translateY(-3px); }
-
-
-    .name { font-weight: bold; margin-bottom: 8px; }
-    .team { font-size: 16px; }
-    .flag { font-size: 28px; margin-right: 8px; }
-  </style>
+    img.flag { width:28px; height:20px; border-radius:3px; }
+  </style>
 </head>
 <body>
 
-
 <h1>🏆 World Cup Sweepstake</h1>
 
-<button onclick="drawTeams()">🎲 Run Mock Draw</button>
+<p><b>Upload your Excel (saved as CSV)</b></p>
+<input type="file" id="fileInput" accept=".csv">
 
 <input id="search" placeholder="Search by name or team...">
 <div id="list" class="grid"></div>
+
 <script>
-const players = [
-"Alex","Ben","Chris","Dan","Ethan","Finn","George","Harry","Isaac","Jack",
-"Kyle","Leo","Matt","Noah","Owen","Paul","Quinn","Ryan","Sam","Tom",
-"Umar","Vince","Will","Xavier","Yas","Zack","Aaron","Blake","Cameron","Dean",
-"Elliot","Freddie","Gavin","Hugo","Ibrahim","Jon","Kieran","Liam","Mike","Nathan",
-"Oscar","Paddy","Reece","Sean","Tyler","Victor","Wes","Zane"
-];
-
-// Using emoji flags (based on ISO country codes )
-const teams = [
-{name:"Brazil", flag:"🇧🇷"},{name:"France", flag:"🇫🇷"},{name:"Argentina", flag:"🇦🇷"},{name:"England", flag:"🏴"},
-{name:"Spain", flag:"🇪🇸"},{name:"Germany", flag:"🇩🇪"},{name:"Portugal", flag:"🇵🇹"},{name:"Netherlands", flag:"🇳🇱"},
-{name:"Belgium", flag:"🇧🇪"},{name:"Italy", flag:"🇮🇹"},{name:"USA", flag:"🇺🇸"},{name:"Mexico", flag:"🇲🇽"},
-{name:"Canada", flag:"🇨🇦"},{name:"Japan", flag:"🇯🇵"},{name:"South Korea", flag:"🇰🇷"},{name:"Australia", flag:"🇦🇺"},
-{name:"Morocco", flag:"🇲🇦"},{name:"Egypt", flag:"🇪🇬"},{name:"Senegal", flag:"🇸🇳"},{name:"Nigeria", flag:"🇳🇬"},
-{name:"Ghana", flag:"🇬🇭"},{name:"Ivory Coast", flag:"🇨🇮"},{name:"Algeria", flag:"🇩🇿"},{name:"Tunisia", flag:"🇹🇳"},
-{name:"Qatar", flag:"🇶🇦"},{name:"Saudi Arabia", flag:"🇸🇦"},{name:"Iran", flag:"🇮🇷"},{name:"Iraq", flag:"🇮🇶"},
-{name:"UAE", flag:"🇦🇪"},{name:"China", flag:"🇨🇳"},{name:"India", flag:"🇮🇳"},{name:"New Zealand", flag:"🇳🇿"},
-{name:"Chile", flag:"🇨🇱"},{name:"Colombia", flag:"🇨🇴"},{name:"Peru", flag:"🇵🇪"},{name:"Uruguay", flag:"🇺🇾"},
-{name:"Paraguay", flag:"🇵🇾"},{name:"Bolivia", flag:"🇧🇴"},{name:"Costa Rica", flag:"🇨🇷"},{name:"Panama", flag:"🇵🇦"},
-{name:"Honduras", flag:"🇭🇳"},{name:"Jamaica", flag:"🇯🇲"},{name:"Cuba", flag:"🇨🇺"},{name:"South Africa", flag:"🇿🇦"},
-{name:"Cameroon", flag:"🇨🇲"},{name:"Mali", flag:"🇲🇱"},{name:"Zambia", flag:"🇿🇲"},{name:"Uganda", flag:"🇺🇬"}
-];
-
-
 let data = [];
-
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-
-function drawTeams() {
-  const shuffledTeams = [...teams];
-  shuffle(shuffledTeams);
-
-
-  data = players.map((name, i) => ({
-    name,
-    team: shuffledTeams[i]
-  }));
-
-
-  render();
-}
-
 
 const list = document.getElementById("list");
 const search = document.getElementById("search");
 
-function render() {
-  const value = search.value.toLowerCase();
-  list.innerHTML = "";
+// Convert country name to flag code (simple mapping)
+const countryCodes = {
+  "Brazil":"br","France":"fr","Argentina":"ar","England":"gb",
+  "Spain":"es","Germany":"de","Portugal":"pt","Netherlands":"nl",
+  "Belgium":"be","Italy":"it","USA":"us","Mexico":"mx",
+  "Canada":"ca","Japan":"jp","South Korea":"kr","Australia":"au",
+  "Morocco":"ma","Egypt":"eg","Senegal":"sn","Nigeria":"ng",
+  "Ghana":"gh","Ivory Coast":"ci","Algeria":"dz","Tunisia":"tn",
+  "Qatar":"qa","Saudi Arabia":"sa","Iran":"ir","Iraq":"iq",
+  "UAE":"ae","China":"cn","India":"in","New Zealand":"nz",
+  "Chile":"cl","Colombia":"co","Peru":"pe","Uruguay":"uy",
+  "Paraguay":"py","Bolivia":"bo","Costa Rica":"cr","Panama":"pa",
+  "Honduras":"hn","Jamaica":"jm","Cuba":"cu","South Africa":"za",
+  "Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
+};
 
-  const filtered = data.filter(p =>
-    p.name.toLowerCase().includes(value) ||
-    p.team.name.toLowerCase().includes(value)
+// Read CSV file
+fileInput.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function(event) {
+    const rows = event.target.result.split("\n");
+
+    // Expect format: Name,Team
+    data = rows.slice(1).map(row => {
+      const [name, team] = row.split(",");
+      if (!name || !team) return null;
+
+      const code = countryCodes[team.trim()] || "";
+
+      return {
+        name: name.trim(),
+        team: team.trim(),
+        code
+      };
+    }).filter(Boolean);
+
+    render();
+  };
+
+  reader.readAsText(file);
+});
+
+function render() {
+  const value = search.value.toLowerCase();
+  list.innerHTML = "";
+
+  const filtered = data.filter(p =>
+    p.name.toLowerCase().includes(value) ||
+    p.team.toLowerCase().includes(value)
   );
 
-  if (filtered.length === 0) {
-    list.innerHTML = "<p>No results found</p>";
-    return;
-  }
+  filtered.forEach(player => {
+    const div = document.createElement("div");
+    div.className = "card";
 
-  filtered.forEach(player => {
-    const div = document.createElement("div");
-    div.className = "card";
+    const flagHTML = player.code
+      ? `https://flagcdn.com/w40/${player.code}.png`
+      : "";
 
-    div.innerHTML = `
-      <div class="name">${player.name}</div>
-      <div class="team">
-        <span class="flag">${player.team.flag}</span>
-        ${player.team.name}
-      </div>
-    `;
+    div.innerHTML = `
+      <div class="name">${player.name}</div>
+      <div class="team">${flagHTML} ${player.team}</div>
+    `;
 
-    list.appendChild(div);
-  });
+    list.appendChild(div);
+  });
 }
 
 search.addEventListener("input", render);
-render();
 </script>
 
 </body>
+</html>
