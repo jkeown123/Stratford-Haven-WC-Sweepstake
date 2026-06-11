@@ -123,6 +123,7 @@ fetch("sweepstake.csv")
   });
 
 // ✅ FIXED RENDER
+
 function render(data) {
   list.innerHTML = "";
 
@@ -133,13 +134,20 @@ function render(data) {
     let flag = "";
     const code = countryCodes[player.team];
 
+    // ✅ FIXED FLAG LINE
     if (code) {
-      flag = '<img class="flag" src="https://flagcdn.com/w40/' + code + '.pngiv class="name">' + player.name + '</div>' +
+      flag = '<img class="flag" src="https://flagcdn.com/w40/' + code + '.png">';
+    }
+
+    // ✅ FIXED HTML OUTPUT
+    div.innerHTML =
+      '<div class="name">' + player.name + '</div>' +
       '<div class="team">' + flag + ' ' + player.team + '</div>';
 
     list.appendChild(div);
   });
 }
+
 </script>
 
 </body>
