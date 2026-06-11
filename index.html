@@ -60,7 +60,7 @@ img.flag {
 <script>
 const list = document.getElementById("list");
 
-// ✅ Country → flag codes
+// ✅ country codes
 const countryCodes = {
   "Brazil":"br","France":"fr","Argentina":"ar","Spain":"es","Germany":"de",
   "Portugal":"pt","Netherlands":"nl","Belgium":"be","Italy":"it",
@@ -75,12 +75,9 @@ const countryCodes = {
   "Zambia":"zm","Uganda":"ug"
 };
 
-// ✅ IMPORTANT: FULL PATH (this was your issue)
+// ✅ fetch CSV (correct path)
 fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
-  .then(response => {
-    console.log("Status:", response.status); // debug
-    return response.text();
-  })
+  .then(response => response.text())
   .then(text => {
 
     text = text.replace(/^\uFEFF/, "");
@@ -88,7 +85,6 @@ fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
 
     const data = rows.slice(1).map(row => {
       const cols = row.split(/[;,]/);
-
       const name = cols[0];
       const team = cols[1];
 
@@ -104,10 +100,10 @@ fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
   })
   .catch(err => {
     console.error(err);
-    list.innerHTML = "<p style='color:red;'>❌ CSV FAILED</p>";
+    list.innerHTML = "<p style='color:red'>❌ CSV failed to load</p>";
   });
 
-// ✅ Render cards
+// ✅ render
 function render(data) {
   list.innerHTML = "";
 
@@ -117,15 +113,20 @@ function render(data) {
 
     let flagHTML = "";
 
-    // ✅ England fix
+    // England special flag
     if (player.team === "England") {
-      flagHTML = `<img class="flag" src="https://flagcdn.com/w40/ {
+      flagHTML = '<img class=\"flag\" src=\"https://flagcdn.com/w40/gb-eng.png\">';
+    } else {
       const code = countryCodes[player.team];
       if (code) {
-        flagHTML = `<img class="flag" src="https://flagcdn.com/w40/${code}.  div.innerHTML = `
-      <div class="name">${player.name}</div>
-      <div class="team">${flagHTML} ${player.team}</div>
-    `;
+        flagHTML = '<img class=\"flag\" src=\"https://flagcdn.com/w40/' + code + '.png\">';
+      }
+    }
+
+    // ✅ IMPORTANT: no broken template strings
+    div.innerHTML =
+      '<div class=\"name\">' + player.name + '</div>' +
+      '<div class=\"team\">' + flagHTML + ' ' + player.team + '</div>';
 
     list.appendChild(div);
   });
