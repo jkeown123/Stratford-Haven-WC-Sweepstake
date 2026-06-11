@@ -60,19 +60,34 @@ img.flag {
 <script>
 const list = document.getElementById("list");
 
-// ✅ country codes
+// ✅ country codes (official 2026 teams)
 const countryCodes = {
-  "Brazil":"br","France":"fr","Argentina":"ar","Spain":"es","Germany":"de",
-  "Portugal":"pt","Netherlands":"nl","Belgium":"be","Italy":"it",
-  "USA":"us","Mexico":"mx","Canada":"ca","Japan":"jp","South Korea":"kr",
-  "Australia":"au","Morocco":"ma","Egypt":"eg","Senegal":"sn",
-  "Nigeria":"ng","Ghana":"gh","Ivory Coast":"ci","Algeria":"dz","Tunisia":"tn",
-  "Qatar":"qa","Saudi Arabia":"sa","Iran":"ir","Iraq":"iq","UAE":"ae",
-  "China":"cn","India":"in","New Zealand":"nz","Chile":"cl","Colombia":"co",
-  "Peru":"pe","Uruguay":"uy","Paraguay":"py","Bolivia":"bo",
-  "Costa Rica":"cr","Panama":"pa","Honduras":"hn","Jamaica":"jm",
-  "Cuba":"cu","South Africa":"za","Cameroon":"cm","Mali":"ml",
-  "Zambia":"zm","Uganda":"ug"
+
+  // 🌎 North America (hosts + qualifiers)
+  "USA":"us","Mexico":"mx","Canada":"ca",
+  "Panama":"pa","Haiti":"ht","Curaçao":"cw",
+
+  // 🌎 South America
+  "Argentina":"ar","Brazil":"br","Colombia":"co",
+  "Ecuador":"ec","Paraguay":"py","Uruguay":"uy",
+
+  // 🌍 Europe
+  "England":"gb-eng","France":"fr","Spain":"es","Portugal":"pt",
+  "Germany":"de","Netherlands":"nl","Belgium":"be","Croatia":"hr",
+  "Switzerland":"ch","Norway":"no","Scotland":"gb-sct","Austria":"at",
+  "Bosnia and Herzegovina":"ba","Sweden":"se","Türkiye":"tr","Czechia":"cz",
+
+  // 🌍 Africa
+  "Algeria":"dz","Cabo Verde":"cv","DR Congo":"cd","Ivory Coast":"ci",
+  "Egypt":"eg","Ghana":"gh","Morocco":"ma","Senegal":"sn",
+  "South Africa":"za","Tunisia":"tn",
+
+  // 🌏 Asia
+  "Japan":"jp","IR Iran":"ir","South Korea":"kr","Saudi Arabia":"sa",
+  "Qatar":"qa","Australia":"au","Uzbekistan":"uz","Jordan":"jo","Iraq":"iq",
+
+  // 🌊 Oceania
+  "New Zealand":"nz"
 };
 
 // ✅ fetch CSV (correct path)
@@ -112,16 +127,6 @@ function render(data) {
     div.className = "card";
 
     let flagHTML = "";
-
-    // England special flag
-    if (player.team === "England") {
-      flagHTML = '<img class=\"flag\" src=\"https://flagcdn.com/w40/gb-eng.png\">';
-    } else {
-      const code = countryCodes[player.team];
-      if (code) {
-        flagHTML = '<img class=\"flag\" src=\"https://flagcdn.com/w40/' + code + '.png\">';
-      }
-    }
 
     // ✅ IMPORTANT: no broken template strings
     div.innerHTML =
