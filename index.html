@@ -17,7 +17,6 @@ h1 {
   text-align: center;
 }
 
-/* Prize box */
 .prizes {
   background: white;
   padding: 15px;
@@ -26,11 +25,6 @@ h1 {
   margin-bottom: 25px;
 }
 
-.prizes h2 {
-  margin-top: 0;
-}
-
-/* Cards */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -68,67 +62,45 @@ img.flag {
 
 <h1>🏆 World Cup Sweepstake</h1>
 
-<!-- ✅ PRIZES -->
 <div class="prizes">
   <h2>💰 Prize Breakdown</h2>
-
-  <p><strong>Main Prizes:</strong></p>
   <ul>
     <li>🥇 Winner – £75</li>
     <li>🥈 Runner-up – £40</li>
-    <li>🥉 Losing Semi-Finalists – £15 each</li>
-  </ul>
-
-  <p><strong>Wooden Spoon Awards:</strong></p>
-  <ul>
-    <li>📉 Most goals conceded (group stage) – £15</li>
-    <li>🟥 Most red cards (yellow cards tie-break) – £15</li>
+    <li>🥉 Semi-final losers – £15 each</li>
+    <li>📉 Most goals conceded – £15</li>
+    <li>🟥 Most red cards – £15</li>
     <li>⚽ Fewest goals scored – £15</li>
   </ul>
 </div>
 
-<!-- ✅ LIST -->
 <div id="list" class="grid"></div>
 
 <script>
 const list = document.getElementById("list");
 
-// ✅ OFFICIAL TEAMS
 const countryCodes = {
-  "USA":"us","Mexico":"mx","Canada":"ca",
-  "Panama":"pa","Haiti":"ht","Curaçao":"cw",
-
-  "Argentina":"ar","Brazil":"br","Colombia":"co",
-  "Ecuador":"ec","Paraguay":"py","Uruguay":"uy",
-
-  "England":"gb-eng","France":"fr","Spain":"es","Portugal":"pt",
-  "Germany":"de","Netherlands":"nl","Belgium":"be","Croatia":"hr",
-  "Switzerland":"ch","Norway":"no","Scotland":"gb-sct","Austria":"at",
-  "Bosnia and Herzegovina":"ba","Sweden":"se","Türkiye":"tr","Czechia":"cz",
-
+  "USA":"us","Mexico":"mx","Canada":"ca","Panama":"pa","Haiti":"ht","Curaçao":"cw",
+  "Argentina":"ar","Brazil":"br","Colombia":"co","Ecuador":"ec","Paraguay":"py","Uruguay":"uy",
+  "England":"gb-eng","France":"fr","Spain":"es","Portugal":"pt","Germany":"de",
+  "Netherlands":"nl","Belgium":"be","Croatia":"hr","Switzerland":"ch","Norway":"no",
+  "Scotland":"gb-sct","Austria":"at","Bosnia and Herzegovina":"ba","Sweden":"se",
+  "Türkiye":"tr","Czechia":"cz",
   "Algeria":"dz","Cabo Verde":"cv","DR Congo":"cd","Ivory Coast":"ci",
-  "Egypt":"eg","Ghana":"gh","Morocco":"ma","Senegal":"sn",
-  "South Africa":"za","Tunisia":"tn",
-
+  "Egypt":"eg","Ghana":"gh","Morocco":"ma","Senegal":"sn","South Africa":"za","Tunisia":"tn",
   "Japan":"jp","IR Iran":"ir","South Korea":"kr","Saudi Arabia":"sa",
   "Qatar":"qa","Australia":"au","Uzbekistan":"uz","Jordan":"jo","Iraq":"iq",
-
   "New Zealand":"nz"
 };
 
-// ✅ FETCH CSV
-fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
-  .then(response => response.text())
+// ✅ FIXED FETCH
+fetch("sweepstake.csv")
+  .then(res => res.text())
   .then(text => {
-
-    text = text.replace(/^\uFEFF/, "");
     const rows = text.trim().split(/\r?\n/);
 
     const data = rows.slice(1).map(row => {
-      const cols = row.split(/[;,]/);
-      const name = cols[0];
-      const team = cols[1];
-
+      const [name, team] = row.split(/[;,]/);
       if (!name || !team) return null;
 
       return {
@@ -137,14 +109,15 @@ fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
       };
     }).filter(Boolean);
 
+    console.log("Loaded:", data); // debug ✅
+
     render(data);
   })
   .catch(err => {
     console.error(err);
-    list.innerHTML = "<p style='color:red'>❌ Failed to load CSV</p>";
+    list.innerHTML = "<p style='color:red'>❌ CSV not loading</p>";
   });
 
-// ✅ RENDER CARDS
 function render(data) {
   list.innerHTML = "";
 
@@ -152,14 +125,12 @@ function render(data) {
     const div = document.createElement("div");
     div.className = "card";
 
-    let flagHTML = "";
-
+    let flag = "";
     const code = countryCodes[player.team];
 
     if (code) {
-      // ✅ FIX: proper image tag + correct URL
-      flagHTML = '<img class="flag" src="https://flagcdn.com/w40/' + code +   '<div class="name">' + player.name + '</div>' +
-      '<div class="team">' + flagHTML + ' ' + player.team + '</div>';
+      flag = '<img class="flag" src="https://flagcdn.com/w40/' + code + '.pngiv class="name">' + player.name + '</div>' +
+      '<div class="team">' + flag + ' ' + player.team + '</div>';
 
     list.appendChild(div);
   });
