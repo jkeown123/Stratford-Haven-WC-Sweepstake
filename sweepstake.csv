@@ -1,6 +1,6 @@
 Name,Team,Goals,Yellows,Reds
 Alex,USA,0,0,0
-Ben,Mexico,0,0,0
+Ben,Mexico,1,0,0
 Chris,Canada,0,0,0
 Dan,Panama,0,0,0
 Ethan,Haiti,0,0,0
@@ -8,21 +8,21 @@ Finn,Curaçao,0,0,0
 George,Argentina,0,0,0
 Harry,Brazil,0,0,0
 Isaac,Colombia,0,0,0
-Jack,Ecuador,0,0,0
+Jack,Ecuador,0,0,1
 Kyle,Paraguay,0,0,0
-Leo,Uruguay,0,0,0
+Leo,Uruguay,0,5,0
 Matt,England,0,0,0
 Noah,France,0,0,0
 Owen,Spain,0,0,0
-Paul,Portugal,0,0,0
+Paul,Portugal,20,0,0
 Quinn,Germany,0,0,0
 Ryan,Netherlands,0,0,0
 Sam,Belgium,0,0,0
 Tom,Croatia,0,0,0
-Umar,Switzerland,0,0,0
-Vince,Norway,0,0,0
-Will,Scotland,0,0,0
-Xavier,Austria,0,0,0
+Umar,Switzerland,0,5,0
+Vince,Norway,6,0,0
+Will,Scotland,8,0,0
+Xavier,Austria,4,0,0
 Yas,Bosnia and Herzegovina,0,0,0
 Zack,Sweden,0,0,0
 Aaron,Türkiye,0,0,0
