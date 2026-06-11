@@ -78,10 +78,10 @@ img.flag {
   </ul>
 </div>
 
-<div id="list" class="grid"></div>
+<div id="groups" class="groups"></div>
 
 <script>
-const list = document.getElementById("list");
+const groupsContainer = document.getElementById("groups");
 
 const countryCodes = {
   "USA":"us","Mexico":"mx","Canada":"ca","Panama":"pa","Haiti":"ht","Curaçao":"cw",
@@ -97,11 +97,10 @@ const countryCodes = {
   "New Zealand":"nz"
 };
 
-// ✅ FETCH CSV
+// ✅ LOAD DATA
 fetch("sweepstake.csv")
   .then(res => res.text())
   .then(text => {
-
     const rows = text.trim().split(/\r?\n/);
 
     const data = rows.slice(1).map(row => {
@@ -114,41 +113,48 @@ fetch("sweepstake.csv")
       };
     }).filter(Boolean);
 
-    console.log("Loaded:", data);
-    render(data);
-  })
-  .catch(err => {
-    console.error(err);
-    list.innerHTML = "<p style='color:red'>❌ CSV not loading</p>";
+    renderGroups(data);
   });
 
-// ✅ FIXED RENDER
+// ✅ GROUP LOGIC
+function renderGroups(data) {
 
-function render(data) {
-  list.innerHTML = "";
+  groupsContainer.innerHTML = "";
 
-  data.forEach(player => {
-    const div = document.createElement("div");
-    div.className = "card";
+  const groupNames = ["A","B","C","D","E","F","G","H","I","J","K","L"];
+  const groupSize = 4;
 
-    let flag = "";
-    const code = countryCodes[player.team];
+  groupNames.forEach((groupName, index) => {
+    const groupDiv = document.createElement("div");
+    groupDiv.className = "group";
 
-    // ✅ FIXED FLAG LINE
-    if (code) {
-      flag = '<img class="flag" src="https://flagcdn.com/w40/' + code + '.png">';
-    }
+    const title = document.createElement("h3");
+    title.textContent = "Group " + groupName;
+    groupDiv.appendChild(title);
 
-    // ✅ FIXED HTML OUTPUT
-    div.innerHTML =
-      '<div class="name">' + player.name + '</div>' +
-      '<div class="team">' + flag + ' ' + player.team + '</div>';
+    const start = index * groupSize;
+    const groupPlayers = data.slice(start, start + groupSize);
 
-    list.appendChild(div);
+    groupPlayers.forEach(player => {
+      const row = document.createElement("div");
+      row.className = "team";
+
+      const code = countryCodes[player.team];
+
+      let flag = "";
+      if (code) {
+        flag = '<img class="flag" src="https://flagcdn.com/w40/' + code + '.png   '<span class="player">' + player.name + '</span>' +
+        flag +
+        '<span>' + player.team + '</span>';
+
+      groupDiv.appendChild(row);
+    });
+
+    groupsContainer.appendChild(groupDiv);
   });
 }
-
 </script>
 
 </body>
 </html>
+
