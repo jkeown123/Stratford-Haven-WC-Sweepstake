@@ -109,7 +109,7 @@ const countryCodes = {
   "New Zealand":"nz"
 };
 
-// ✅ OFFICIAL FIFA GROUPS
+// ✅ FIFA groups
 const groupMap = {
   "Group A": ["Mexico","South Africa","South Korea","Czechia"],
   "Group B": ["Canada","Bosnia and Herzegovina","Qatar","Switzerland"],
@@ -125,16 +125,14 @@ const groupMap = {
   "Group L": ["England","Croatia","Ghana","Panama"]
 };
 
-// ✅ LOAD CSV
+// ✅ Load CSV
 fetch("sweepstake.csv")
   .then(res => res.text())
   .then(text => {
-
     const rows = text.trim().split(/\r?\n/);
 
     const data = rows.slice(1).map(row => {
       const [name, team] = row.split(/[;,]/);
-
       if (!name || !team) return null;
 
       return {
@@ -146,7 +144,7 @@ fetch("sweepstake.csv")
     renderGroups(data);
   });
 
-// ✅ RENDER GROUPS
+// ✅ SAFE RENDER (no innerHTML strings)
 function renderGroups(data) {
 
   groupsContainer.innerHTML = "";
@@ -160,24 +158,34 @@ function renderGroups(data) {
     title.textContent = groupName;
     groupDiv.appendChild(title);
 
-    const teams = groupMap[groupName];
-
-    teams.forEach(teamName => {
+    groupMap[groupName].forEach(teamName => {
 
       const player = data.find(p => p.team === teamName);
 
       const row = document.createElement("div");
       row.className = "team";
 
-      const playerName = player ? player.name : "-";
+      // player name
+      const playerSpan = document.createElement("span");
+      playerSpan.className = "player";
+      playerSpan.textContent = player ? player.name : "-";
 
+      row.appendChild(playerSpan);
+
+      // flag
       const code = countryCodes[teamName];
-      let flag = "";
-
       if (code) {
-        flag = '<img class="flag" src="https://flagcdn.com/w40/' + code + '.      '<span class="player">' + playerName + '</span>' +
-        flag +
-        '<span>' + teamName + '</span>';
+        const img = document.createElement("img");
+        img.className = "flag";
+        img.src = "https://flagcdn.com/w40/" + code + ".png";
+        row.appendChild(img);
+      }
+
+      // team name
+      const teamSpan = document.createElement("span");
+      teamSpan.textContent = teamName;
+
+      row.appendChild(teamSpan);
 
       groupDiv.appendChild(row);
     });
