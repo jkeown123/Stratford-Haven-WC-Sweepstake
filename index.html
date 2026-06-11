@@ -51,7 +51,7 @@ h1 { text-align: center; }
 
 .player {
   font-weight: bold;
-  min-width: 90px;
+  min-width: 140px;
 }
 
 .stats {
@@ -109,7 +109,7 @@ const countryCodes = {
   "New Zealand":"nz"
 };
 
-// ✅ FIFA groups
+// ✅ FIFA Groups
 const groupMap = {
   "Group A": ["Mexico","South Africa","South Korea","Czechia"],
   "Group B": ["Canada","Bosnia and Herzegovina","Qatar","Switzerland"],
@@ -125,8 +125,8 @@ const groupMap = {
   "Group L": ["England","Croatia","Ghana","Panama"]
 };
 
-// ✅ LOAD CSV
-fetch("sweepstake.csv")
+// ✅ LOAD CSV (with cache busting)
+fetch("sweepstake.csv?v=" + Date.now())
   .then(res => res.text())
   .then(text => {
 
@@ -135,16 +135,18 @@ fetch("sweepstake.csv")
     const data = rows.slice(1).map(row => {
       const parts = row.split(/[;,]/);
 
-      const name = parts[0];
-      const team = parts[1];
-      const goals = parseInt(parts[2]) || 0;
-      const yellows = parseInt(parts[3]) || 0;
-      const reds = parseInt(parts[4]) || 0;
+      const name1 = parts[0];
+      const name2 = parts[1];
+      const team = parts[2];
+      const goals = parseInt(parts[3]) || 0;
+      const yellows = parseInt(parts[4]) || 0;
+      const reds = parseInt(parts[5]) || 0;
 
-      if (!name || !team) return null;
+      if (!name1 || !team) return null;
 
       return {
-        name: name.trim(),
+        name1: name1.trim(),
+        name2: name2 ? name2.trim() : "",
         team: team.trim(),
         goals,
         yellows,
@@ -155,7 +157,7 @@ fetch("sweepstake.csv")
     renderGroups(data);
   });
 
-// ✅ RENDER GROUPS (SAFE)
+// ✅ RENDER GROUPS
 function renderGroups(data) {
 
   groupsContainer.innerHTML = "";
@@ -176,13 +178,22 @@ function renderGroups(data) {
       const row = document.createElement("div");
       row.className = "team";
 
-      // Player name
+      // ✅ PLAYER NAMES
       const playerSpan = document.createElement("span");
       playerSpan.className = "player";
-      playerSpan.textContent = player ? player.name : "-";
+
+      if (player) {
+        playerSpan.textContent =
+          player.name2
+            ? player.name1 + ", " + player.name2
+            : player.name1;
+      } else {
+        playerSpan.textContent = "-";
+      }
+
       row.appendChild(playerSpan);
 
-      // Flag
+      // ✅ FLAG
       const code = countryCodes[teamName];
       if (code) {
         const img = document.createElement("img");
@@ -191,7 +202,7 @@ function renderGroups(data) {
         row.appendChild(img);
       }
 
-      // Team + stats
+      // ✅ TEAM + STATS
       const teamSpan = document.createElement("span");
 
       let stats = "";
@@ -202,8 +213,8 @@ function renderGroups(data) {
       }
 
       teamSpan.textContent = teamName + (stats ? " " + stats : "");
-      row.appendChild(teamSpan);
 
+      row.appendChild(teamSpan);
       groupDiv.appendChild(row);
     });
 
