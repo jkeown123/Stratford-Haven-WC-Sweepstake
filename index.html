@@ -1,61 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>World Cup Sweepstake</title>
-  <style>
-    body { font-family: Arial; max-width: 1000px; margin: auto; padding: 20px; background:#f5f7fb; }
-    h1 { text-align: center; }
-    input { width: 100%; padding: 12px; margin: 10px 0; font-size: 16px; border-radius:8px; border:1px solid #ccc; }
+<meta charset="UTF-8">
+<title>World Cup Sweepstake</title>
+<style>
+body { font-family: Arial; max-width: 1100px; margin:auto; padding:20px; background:#f5f7fb; }
+h1 { text-align:center; }
+input { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
+.section { margin-top:30px; }
 
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
+.card { background:white; border-radius:12px; padding:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+.name { font-weight:bold; margin-bottom:8px; }
+.team { display:flex; align-items:center; gap:8px; }
+img.flag { width:28px; height:20px; border-radius:3px; }
 
-    .name { font-weight: bold; margin-bottom: 8px; }
-    .team { display:flex; align-items:center; gap:8px; }
-
-    img.flag { width:28px; height:20px; border-radius:3px; }
-  </style>
+/* Draw visual */
+.draw-container { background:white; padding:15px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+.draw-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.draw-item { padding:8px; border-bottom:1px solid #eee; font-size:14px; }
+.draw-title { font-weight:bold; margin-bottom:10px; }
+</style>
 </head>
+
 <body>
 
 <h1>🏆 World Cup Sweepstake</h1>
 
-<p><b>Upload your Excel (saved as CSV)</b></p>
+<p><b>Upload your Excel (CSV)</b></p>
 <input type="file" id="fileInput" accept=".csv">
 
 <input id="search" placeholder="Search by name or team...">
-<div id="list" class="grid"></div>
+
+<!-- Draw display -->
+<div class="section">
+  <div class="draw-container">
+    <div class="draw-title">📋 Full Draw Overview</div>
+    <div id="draw" class="draw-grid"></div>
+  </div>
+</div>
+
+<!-- Cards -->
+<div id="list" class="grid section"></div>
 
 <script>
 let data = [];
 
 const list = document.getElementById("list");
+const draw = document.getElementById("draw");
 const search = document.getElementById("search");
 
-// Convert country name to flag code (simple mapping)
 const countryCodes = {
-  "Brazil":"br","France":"fr","Argentina":"ar","England":"gb",
-  "Spain":"es","Germany":"de","Portugal":"pt","Netherlands":"nl",
-  "Belgium":"be","Italy":"it","USA":"us","Mexico":"mx",
-  "Canada":"ca","Japan":"jp","South Korea":"kr","Australia":"au",
-  "Morocco":"ma","Egypt":"eg","Senegal":"sn","Nigeria":"ng",
-  "Ghana":"gh","Ivory Coast":"ci","Algeria":"dz","Tunisia":"tn",
-  "Qatar":"qa","Saudi Arabia":"sa","Iran":"ir","Iraq":"iq",
-  "UAE":"ae","China":"cn","India":"in","New Zealand":"nz",
-  "Chile":"cl","Colombia":"co","Peru":"pe","Uruguay":"uy",
-  "Paraguay":"py","Bolivia":"bo","Costa Rica":"cr","Panama":"pa",
-  "Honduras":"hn","Jamaica":"jm","Cuba":"cu","South Africa":"za",
-  "Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
+"Brazil":"br","France":"fr","Argentina":"ar","England":"gb",
+"Spain":"es","Germany":"de","Portugal":"pt","Netherlands":"nl",
+"Belgium":"be","Italy":"it","USA":"us","Mexico":"mx",
+"Canada":"ca","Japan":"jp","South Korea":"kr","Australia":"au",
+"Morocco":"ma","Egypt":"eg","Senegal":"sn","Nigeria":"ng",
+"Ghana":"gh","Ivory Coast":"ci","Algeria":"dz","Tunisia":"tn",
+"Qatar":"qa","Saudi Arabia":"sa","Iran":"ir","Iraq":"iq",
+"UAE":"ae","China":"cn","India":"in","New Zealand":"nz",
+"Chile":"cl","Colombia":"co","Peru":"pe","Uruguay":"uy",
+"Paraguay":"py","Bolivia":"bo","Costa Rica":"cr","Panama":"pa",
+"Honduras":"hn","Jamaica":"jm","Cuba":"cu","South Africa":"za",
+"Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
 };
 
-// Read CSV file
 fileInput.addEventListener("change", function(e) {
   const file = e.target.files[0];
   const reader = new FileReader();
@@ -63,17 +73,14 @@ fileInput.addEventListener("change", function(e) {
   reader.onload = function(event) {
     const rows = event.target.result.split("\n");
 
-    // Expect format: Name,Team
     data = rows.slice(1).map(row => {
       const [name, team] = row.split(",");
       if (!name || !team) return null;
 
-      const code = countryCodes[team.trim()] || "";
-
       return {
         name: name.trim(),
         team: team.trim(),
-        code
+        code: countryCodes[team.trim()] || ""
       };
     }).filter(Boolean);
 
@@ -85,13 +92,24 @@ fileInput.addEventListener("change", function(e) {
 
 function render() {
   const value = search.value.toLowerCase();
+
   list.innerHTML = "";
+  draw.innerHTML = "";
 
   const filtered = data.filter(p =>
     p.name.toLowerCase().includes(value) ||
     p.team.toLowerCase().includes(value)
   );
 
+  // Draw overview (simple ordered list)
+  data.forEach(player => {
+    const el = document.createElement("div");
+    el.className = "draw-item";
+    el.innerHTML = `${player.name} - ${player.team}`;
+    draw.appendChild(el);
+  });
+
+  // Cards
   filtered.forEach(player => {
     const div = document.createElement("div");
     div.className = "card";
@@ -102,7 +120,7 @@ function render() {
 
     div.innerHTML = `
       <div class="name">${player.name}</div>
-      <div class="team">${flagHTML} ${player.team}</div>
+      <div class="team">${flagHTML}${player.team}</div>
     `;
 
     list.appendChild(div);
