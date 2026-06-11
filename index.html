@@ -4,80 +4,23 @@
 <meta charset="UTF-8">
 <title>World Cup Sweepstake</title>
 <style>
-body {
-  font-family: Arial;
-  max-width: 1100px;
-  margin:auto;
-  padding:20px;
-  background:#f5f7fb;
-}
-
+body { font-family: Arial; max-width: 1100px; margin:auto; padding:20px; background:#f5f7fb; }
 h1 { text-align:center; }
-
-input {
-  width:100%;
-  padding:12px;
-  margin:10px 0;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
+input { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc; }
 
 .section { margin-top:30px; }
 
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:15px;
-}
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
+.card { background:white; border-radius:12px; padding:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+.name { font-weight:bold; margin-bottom:8px; }
+.team { display:flex; align-items:center; gap:8px; }
+img.flag { width:28px; height:20px; border-radius:3px; }
 
-.card {
-  background:white;
-  border-radius:12px;
-  padding:15px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
-}
-
-.name {
-  font-weight:bold;
-  margin-bottom:8px;
-}
-
-.team {
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-img.flag {
-  width:28px;
-  height:20px;
-  border-radius:3px;
-}
-
-/* Draw section */
-.draw-container {
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
-}
-
-.draw-grid {
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-}
-
-.draw-item {
-  padding:8px;
-  border-bottom:1px solid #eee;
-  font-size:14px;
-}
-
-.draw-title {
-  font-weight:bold;
-  margin-bottom:10px;
-}
+/* Draw visual */
+.draw-container { background:white; padding:15px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+.draw-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.draw-item { padding:8px; border-bottom:1px solid #eee; font-size:14px; }
+.draw-title { font-weight:bold; margin-bottom:10px; }
 </style>
 </head>
 
@@ -87,7 +30,7 @@ img.flag {
 
 <input id="search" placeholder="Search by name or team...">
 
-<!-- DRAW -->
+<!-- Draw display -->
 <div class="section">
   <div class="draw-container">
     <div class="draw-title">📋 Full Draw Overview</div>
@@ -95,7 +38,7 @@ img.flag {
   </div>
 </div>
 
-<!-- CARDS -->
+<!-- Cards -->
 <div id="list" class="grid section"></div>
 
 <script>
@@ -120,14 +63,22 @@ const countryCodes = {
 "Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
 };
 
-// ✅ LOAD CSV AUTOMATICALLY
-fetch("sweepstake.csv")
-  .then(res => res.text())
+// ✅ Robust CSV load (handles Windows/Mac line endings + errors)
+fetch("./sweepstake.csv")
+  .then(res => {
+    if (!res.ok) {
+      document.getElementById("draw").innerHTML =
+        "<p style='color:red;'>❌ Could not find sweepstake.csv</p>";
+      throw new Error("CSV NOT FOUND");
+    }
+    return res.text();
+  })
   .then(text => {
-    const rows = text.trim().split("\n");
+    const rows = text.trim().split(/\r?\n/); // ✅ FIXED
 
     data = rows.slice(1).map(row => {
       const [name, team] = row.split(",");
+
       if (!name || !team) return null;
 
       return {
@@ -137,7 +88,13 @@ fetch("sweepstake.csv")
       };
     }).filter(Boolean);
 
+    console.log("Loaded data:", data);
     render();
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById("draw").innerHTML =
+      "<p style='color:red;'>⚠️ Error loading CSV</p>";
   });
 
 function render() {
@@ -151,7 +108,7 @@ function render() {
     p.team.toLowerCase().includes(value)
   );
 
-  // ✅ DRAW OVERVIEW
+  // Draw overview
   data.forEach(player => {
     const el = document.createElement("div");
     el.className = "draw-item";
@@ -159,18 +116,18 @@ function render() {
     draw.appendChild(el);
   });
 
-  // ✅ CARDS
+  // Cards
   filtered.forEach(player => {
     const div = document.createElement("div");
     div.className = "card";
 
     const flagHTML = player.code
-      ? `<img class="flag" src="https://flagcdn.com/w40/${player.code}.png`">`
+      ? `<img class=\"flag\" src=\"https://flagcdn.com/w40/${player.code}.png\">`
       : "";
 
     div.innerHTML = `
-      <div class="name">${player.name}</div>
-      <div class="team">${flagHTML} ${player.team}</div>
+      <div class=\"name\">${player.name}</div>
+      <div class=\"team\">${flagHTML} ${player.team}</div>
     `;
 
     list.appendChild(div);
