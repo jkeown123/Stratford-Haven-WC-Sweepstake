@@ -4,25 +4,39 @@
   <meta charset="UTF-8">
   <title>World Cup Sweepstake</title>
   <style>
-    body { font-family: Arial; max-width: 900px; margin: auto; padding: 20px; }
+    body { font-family: Arial; max-width: 1000px; margin: auto; padding: 20px; background:#f5f7fb; }
     h1 { text-align: center; }
-    button { padding: 10px 15px; font-size: 16px; margin-bottom: 20px; cursor: pointer; }
-    input { width: 100%; padding: 10px; margin: 10px 0 20px; font-size: 16px; }
-    .card { border: 1px solid #ddd; border-radius: 10px; padding: 15px; margin-bottom: 10px; }
-    .row { display: flex; justify-content: space-between; }
+    button { padding: 12px 18px; font-size: 16px; margin-bottom: 20px; cursor: pointer; border-radius:8px; border:none; background:#007bff; color:white; }
+    input { width: 100%; padding: 12px; margin: 10px 0 20px; font-size: 16px; border-radius:8px; border:1px solid #ccc; }
+
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-3px); }
+
+
+    .name { font-weight: bold; margin-bottom: 8px; }
+    .team { font-size: 16px; }
+    .flag { font-size: 28px; margin-right: 8px; }
   </style>
 </head>
 <body>
-<h1>🏆 World Cup Sweepstake</h1>
 
+
+<h1>🏆 World Cup Sweepstake</h1>
 
 <button onclick="drawTeams()">🎲 Run Mock Draw</button>
 
-
 <input id="search" placeholder="Search by name or team...">
-<div id="list"></div>
-
-
+<div id="list" class="grid"></div>
 <script>
 const players = [
 "Alex","Ben","Chris","Dan","Ethan","Finn","George","Harry","Isaac","Jack",
@@ -32,71 +46,83 @@ const players = [
 "Oscar","Paddy","Reece","Sean","Tyler","Victor","Wes","Zane"
 ];
 
+// Using emoji flags (based on ISO country codes )
 const teams = [
-"Brazil","France","Argentina","England","Spain","Germany","Portugal","Netherlands",
-"Belgium","Italy","USA","Mexico","Canada","Japan","South Korea","Australia",
-"Morocco","Egypt","Senegal","Nigeria","Ghana","Ivory Coast","Algeria","Tunisia",
-"Qatar","Saudi Arabia","Iran","Iraq","UAE","China","India","New Zealand",
-"Chile","Colombia","Peru","Uruguay","Paraguay","Bolivia","Costa Rica","Panama",
-"Honduras","Jamaica","Cuba","South Africa","Cameroon","Mali","Zambia","Uganda"
+{name:"Brazil", flag:"🇧🇷"},{name:"France", flag:"🇫🇷"},{name:"Argentina", flag:"🇦🇷"},{name:"England", flag:"🏴"},
+{name:"Spain", flag:"🇪🇸"},{name:"Germany", flag:"🇩🇪"},{name:"Portugal", flag:"🇵🇹"},{name:"Netherlands", flag:"🇳🇱"},
+{name:"Belgium", flag:"🇧🇪"},{name:"Italy", flag:"🇮🇹"},{name:"USA", flag:"🇺🇸"},{name:"Mexico", flag:"🇲🇽"},
+{name:"Canada", flag:"🇨🇦"},{name:"Japan", flag:"🇯🇵"},{name:"South Korea", flag:"🇰🇷"},{name:"Australia", flag:"🇦🇺"},
+{name:"Morocco", flag:"🇲🇦"},{name:"Egypt", flag:"🇪🇬"},{name:"Senegal", flag:"🇸🇳"},{name:"Nigeria", flag:"🇳🇬"},
+{name:"Ghana", flag:"🇬🇭"},{name:"Ivory Coast", flag:"🇨🇮"},{name:"Algeria", flag:"🇩🇿"},{name:"Tunisia", flag:"🇹🇳"},
+{name:"Qatar", flag:"🇶🇦"},{name:"Saudi Arabia", flag:"🇸🇦"},{name:"Iran", flag:"🇮🇷"},{name:"Iraq", flag:"🇮🇶"},
+{name:"UAE", flag:"🇦🇪"},{name:"China", flag:"🇨🇳"},{name:"India", flag:"🇮🇳"},{name:"New Zealand", flag:"🇳🇿"},
+{name:"Chile", flag:"🇨🇱"},{name:"Colombia", flag:"🇨🇴"},{name:"Peru", flag:"🇵🇪"},{name:"Uruguay", flag:"🇺🇾"},
+{name:"Paraguay", flag:"🇵🇾"},{name:"Bolivia", flag:"🇧🇴"},{name:"Costa Rica", flag:"🇨🇷"},{name:"Panama", flag:"🇵🇦"},
+{name:"Honduras", flag:"🇭🇳"},{name:"Jamaica", flag:"🇯🇲"},{name:"Cuba", flag:"🇨🇺"},{name:"South Africa", flag:"🇿🇦"},
+{name:"Cameroon", flag:"🇨🇲"},{name:"Mali", flag:"🇲🇱"},{name:"Zambia", flag:"🇿🇲"},{name:"Uganda", flag:"🇺🇬"}
 ];
+
+
 let data = [];
+
+
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
+
+
 function drawTeams() {
   const shuffledTeams = [...teams];
   shuffle(shuffledTeams);
+
+
   data = players.map((name, i) => ({
     name,
     team: shuffledTeams[i]
   }));
+
+
   render();
 }
+
+
 const list = document.getElementById("list");
 const search = document.getElementById("search");
-
 
 function render() {
   const value = search.value.toLowerCase();
   list.innerHTML = "";
 
-
   const filtered = data.filter(p =>
     p.name.toLowerCase().includes(value) ||
-    p.team.toLowerCase().includes(value)
+    p.team.name.toLowerCase().includes(value)
   );
-
 
   if (filtered.length === 0) {
     list.innerHTML = "<p>No results found</p>";
     return;
   }
 
-
   filtered.forEach(player => {
     const div = document.createElement("div");
     div.className = "card";
 
-
     div.innerHTML = `
-      <div class="row">
-        <strong>${player.name}</strong>
+      <div class="name">${player.name}</div>
+      <div class="team">
+        <span class="flag">${player.team.flag}</span>
+        ${player.team.name}
       </div>
-      <div>🌍 Team: ${player.team}</div>
     `;
-
 
     list.appendChild(div);
   });
 }
 
 search.addEventListener("input", render);
-
-// Initial empty render
 render();
 </script>
 
