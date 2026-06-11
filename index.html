@@ -100,7 +100,7 @@ const countryCodes = {
   "New Zealand":"nz"
 };
 
-// ✅ FIXED FETCH
+// ✅ FETCH CSV
 fetch("sweepstake.csv")
   .then(res => res.text())
   .then(text => {
@@ -116,8 +116,7 @@ fetch("sweepstake.csv")
       };
     }).filter(Boolean);
 
-    console.log("Loaded:", data); // debug ✅
-
+    console.log("Loaded:", data);
     render(data);
   })
   .catch(err => {
@@ -125,6 +124,7 @@ fetch("sweepstake.csv")
     list.innerHTML = "<p style='color:red'>❌ CSV not loading</p>";
   });
 
+// ✅ FIXED RENDER FUNCTION
 function render(data) {
   list.innerHTML = "";
 
