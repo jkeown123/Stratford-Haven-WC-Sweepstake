@@ -6,7 +6,6 @@
 <style>
 body { font-family: Arial; max-width: 1100px; margin:auto; padding:20px; background:#f5f7fb; }
 h1 { text-align:center; }
-input { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc; }
 .section { margin-top:30px; }
 .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
 .card { background:white; border-radius:12px; padding:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
@@ -23,11 +22,9 @@ img.flag { width:28px; height:20px; border-radius:3px; }
 
 <h1>🏆 World Cup Sweepstake</h1>
 
-<input id="search" placeholder="Search by name or team...">
-
 <div class="section">
   <div class="draw-container">
-    <div class="draw-title">📋 Full Draw Overview</div>
+    <div class="draw-title">📋 Official Draw (Locked)</div>
     <div id="draw" class="draw-grid"></div>
   </div>
 </div>
@@ -35,73 +32,58 @@ img.flag { width:28px; height:20px; border-radius:3px; }
 <div id="list" class="grid section"></div>
 
 <script>
-let data = [];
-const list = document.getElementById("list");
-const draw = document.getElementById("draw");
-const search = document.getElementById("search");
+let data = JSON.parse(localStorage.getItem("drawData")) || [];
 
 const countryCodes = {
-"Brazil":"br","France":"fr","Argentina":"ar","England":"gb",
-"Spain":"es","Germany":"de","Portugal":"pt","Netherlands":"nl",
-"Belgium":"be","Italy":"it","USA":"us","Mexico":"mx",
-"Canada":"ca","Japan":"jp","South Korea":"kr","Australia":"au",
-"Morocco":"ma","Egypt":"eg","Senegal":"sn","Nigeria":"ng",
-"Ghana":"gh","Ivory Coast":"ci","Algeria":"dz","Tunisia":"tn",
-"Qatar":"qa","Saudi Arabia":"sa","Iran":"ir","Iraq":"iq",
-"UAE":"ae","China":"cn","India":"in","New Zealand":"nz",
-"Chile":"cl","Colombia":"co","Peru":"pe","Uruguay":"uy",
-"Paraguay":"py","Bolivia":"bo","Costa Rica":"cr","Panama":"pa",
-"Honduras":"hn","Jamaica":"jm","Cuba":"cu","South Africa":"za",
-"Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
+"Brazil":"br","France":"fr","Argentina":"ar","England":"gb","Spain":"es","Germany":"de","Portugal":"pt","Netherlands":"nl",
+"Belgium":"be","Italy":"it","USA":"us","Mexico":"mx","Canada":"ca","Japan":"jp","South Korea":"kr","Australia":"au",
+"Morocco":"ma","Egypt":"eg","Senegal":"sn","Nigeria":"ng","Ghana":"gh","Ivory Coast":"ci","Algeria":"dz","Tunisia":"tn",
+"Qatar":"qa","Saudi Arabia":"sa","Iran":"ir","Iraq":"iq","UAE":"ae","China":"cn","India":"in","New Zealand":"nz",
+"Chile":"cl","Colombia":"co","Peru":"pe","Uruguay":"uy","Paraguay":"py","Bolivia":"bo","Costa Rica":"cr","Panama":"pa",
+"Honduras":"hn","Jamaica":"jm","Cuba":"cu","South Africa":"za","Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
 };
 
-fetch("./sweepstake.csv")
-  .then(res => {
-    if (!res.ok) {
-      draw.innerHTML = "<p style='color:red;'>❌ CSV not found</p>";
-      throw new Error("CSV missing");
-    }
-    return res.text();
-  })
-  .then(text => {
-    // ✅ Remove BOM if present
-    text = text.replace(/^\uFEFF/, "");
+// ✅ Load CSV once (locked after first load)
+if (data.length === 0) {
+  fetch("./sweepstake.csv")
+    .then(res => res.text())
+    .then(text => {
+      text = text.replace(/^\uFEFF/, "");
+      const rows = text.trim().split(/\r?\n/);
 
-    const rows = text.trim().split(/\r?\n/);
+      data = rows.slice(1).map(row => {
+        const cols = row.split(/[;,]/);
+        const name = cols[0];
+        const team = cols[1];
 
-    data = rows.slice(1).map(row => {
-      // ✅ Handle comma OR semicolon CSV
-      const cols = row.split(/[;,]/);
-      const name = cols[0];
-      const team = cols[1];
+        if (!name || !team) return null;
 
-      if (!name || !team) return null;
+        return {
+          name: name.trim(),
+          team: team.trim(),
+          code: countryCodes[team.trim()] || ""
+        };
+      }).filter(Boolean);
 
-      return {
-        name: name.trim(),
-        team: team.trim(),
-        code: countryCodes[team.trim()] || ""
-      };
-    }).filter(Boolean);
-
-    console.log("Loaded data:", data);
-    render();
-  })
-  .catch(err => {
-    console.error(err);
-  });
+      localStorage.setItem("drawData", JSON.stringify(data)); // 🔒 lock it
+      render();
+    })
+    .catch(() => {
+      document.getElementById("draw").innerHTML =
+        "<p style='color:red;'>❌ Error loading CSV</p>";
+    });
+} else {
+  render();
+}
 
 function render() {
-  const value = search.value.toLowerCase();
+  const list = document.getElementById("list");
+  const draw = document.getElementById("draw");
 
   list.innerHTML = "";
   draw.innerHTML = "";
 
-  const filtered = data.filter(p =>
-    p.name.toLowerCase().includes(value) ||
-    p.team.toLowerCase().includes(value)
-  );
-
+  // ✅ Draw follows CSV order exactly
   data.forEach(player => {
     const el = document.createElement("div");
     el.className = "draw-item";
@@ -109,14 +91,15 @@ function render() {
     draw.appendChild(el);
   });
 
-  filtered.forEach(player => {
+  // ✅ Cards with proper flag images
+  data.forEach(player => {
     const div = document.createElement("div");
     div.className = "card";
 
     const flagHTML = player.code
+    const flagHTML = player.code
       ? `<img class="flag" src="https://flagcdn.com/w40/${player.code}.png">`
       : "";
-
 
     div.innerHTML = `
       <div class="name">${player.name}</div>
@@ -126,8 +109,6 @@ function render() {
     list.appendChild(div);
   });
 }
-
-search.addEventListener("input", render);
 </script>
 
 </body>
