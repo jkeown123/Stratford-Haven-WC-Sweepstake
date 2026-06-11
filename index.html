@@ -37,8 +37,8 @@ h1 { text-align: center; }
 }
 
 .group h3 {
-  margin-top: 0;
   border-bottom: 2px solid #eee;
+  margin-top: 0;
   padding-bottom: 5px;
 }
 
@@ -46,7 +46,7 @@ h1 { text-align: center; }
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 8px 0;
+  margin: 6px 0;
 }
 
 .player {
@@ -65,7 +65,6 @@ img.flag {
   border-radius: 3px;
 }
 </style>
-
 </head>
 
 <body>
@@ -90,11 +89,15 @@ img.flag {
   </ul>
 </div>
 
+<!-- ✅ LIVE LEADERBOARD -->
+<div id="leaderboard" class="prizes"></div>
+
 <div id="groups" class="groups"></div>
 
 <script>
 const groupsContainer = document.getElementById("groups");
 
+// ✅ FLAGS
 const countryCodes = {
   "USA":"us","Mexico":"mx","Canada":"ca","Panama":"pa","Haiti":"ht","Curaçao":"cw",
   "Argentina":"ar","Brazil":"br","Colombia":"co","Ecuador":"ec","Paraguay":"py","Uruguay":"uy",
@@ -109,7 +112,7 @@ const countryCodes = {
   "New Zealand":"nz"
 };
 
-// ✅ FIFA Groups
+// ✅ FIFA GROUPS
 const groupMap = {
   "Group A": ["Mexico","South Africa","South Korea","Czechia"],
   "Group B": ["Canada","Bosnia and Herzegovina","Qatar","Switzerland"],
@@ -125,7 +128,7 @@ const groupMap = {
   "Group L": ["England","Croatia","Ghana","Panama"]
 };
 
-// ✅ LOAD CSV (with cache busting)
+// ✅ LOAD CSV (no cache)
 fetch("sweepstake.csv?v=" + Date.now())
   .then(res => res.text())
   .then(text => {
@@ -135,29 +138,53 @@ fetch("sweepstake.csv?v=" + Date.now())
     const data = rows.slice(1).map(row => {
       const parts = row.split(/[;,]/);
 
-      const name1 = parts[0];
-      const name2 = parts[1];
-      const team = parts[2];
-      const goals = parseInt(parts[3]) || 0;
-      const yellows = parseInt(parts[4]) || 0;
-      const reds = parseInt(parts[5]) || 0;
-
-      if (!name1 || !team) return null;
-
       return {
-        name1: name1.trim(),
-        name2: name2 ? name2.trim() : "",
-        team: team.trim(),
-        goals,
-        yellows,
-        reds
+        name1: parts[0]?.trim(),
+        name2: parts[1]?.trim() || "",
+        team: parts[2]?.trim(),
+        goals: parseInt(parts[3]) || 0,
+        yellows: parseInt(parts[4]) || 0,
+        reds: parseInt(parts[5]) || 0
       };
-    }).filter(Boolean);
+    }).filter(p => p.name1 && p.team);
 
+    renderLeaderboard(data);
     renderGroups(data);
   });
 
-// ✅ RENDER GROUPS
+// ✅ FORMAT NAMES
+function formatName(p) {
+  return p.name2 ? p.name1 + ", " + p.name2 : p.name1;
+}
+
+// ✅ LEADERBOARD
+function renderLeaderboard(data) {
+
+  const leaderboard = document.getElementById("leaderboard");
+
+  // sort helpers
+  const topGoals = [...data].sort((a,b)=>b.goals - a.goals)[0];
+  const mostCards = [...data].sort((a,b)=>{
+    if (b.reds !== a.reds) return b.reds - a.reds;
+    return b.yellows - a.yellows;
+  })[0];
+  const fewestGoals = [...data].sort((a,b)=>a.goals - b.goals)[0];
+
+  leaderboard.innerHTML = `
+    <h2>📊 Live Leaderboard</h2>
+
+    <p><strong>🏆 Top Scorer (£75):</strong><br>
+    ${formatName(topGoals)} (${topGoals.team}) — ${topGoals.goals} ⚽</p>
+
+    <p><strong>🟥 Most Red Cards (£15):</strong><br>
+    ${formatName(mostCards)} (${mostCards.team}) — ${mostCards.reds} 🟥 ${mostCards.yellows} 🟨</p>
+
+    <p><strong>⚽ Fewest Goals (£15):</strong><br>
+    ${formatName(fewestGoals)} (${fewestGoals.team}) — ${fewestGoals.goals} ⚽</p>
+  `;
+}
+
+// ✅ GROUPS
 function renderGroups(data) {
 
   groupsContainer.innerHTML = "";
@@ -178,22 +205,13 @@ function renderGroups(data) {
       const row = document.createElement("div");
       row.className = "team";
 
-      // ✅ PLAYER NAMES
+      // names
       const playerSpan = document.createElement("span");
       playerSpan.className = "player";
-
-      if (player) {
-        playerSpan.textContent =
-          player.name2
-            ? player.name1 + ", " + player.name2
-            : player.name1;
-      } else {
-        playerSpan.textContent = "-";
-      }
-
+      playerSpan.textContent = player ? formatName(player) : "-";
       row.appendChild(playerSpan);
 
-      // ✅ FLAG
+      // flag
       const code = countryCodes[teamName];
       if (code) {
         const img = document.createElement("img");
@@ -202,7 +220,7 @@ function renderGroups(data) {
         row.appendChild(img);
       }
 
-      // ✅ TEAM + STATS
+      // team + stats
       const teamSpan = document.createElement("span");
 
       let stats = "";
@@ -213,8 +231,8 @@ function renderGroups(data) {
       }
 
       teamSpan.textContent = teamName + (stats ? " " + stats : "");
-
       row.appendChild(teamSpan);
+
       groupDiv.appendChild(row);
     });
 
