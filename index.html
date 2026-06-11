@@ -190,9 +190,9 @@ function renderGroups(data) {
 
       let stats = "";
       if (player) {
-        if (player.goals) stats += player.goals + " ⚽ ";
-        if (player.yellows) stats += player.yellows + " 🟨 ";
-        if (player.reds) stats += player.reds + " 🟥";
+        if (player.goals) stats += player.goals + "x ⚽ ";
+        if (player.yellows) stats += player.yellows + "x 🟨 ";
+        if (player.reds) stats += player.reds + "x 🟥";
       }
 
       teamSpan.textContent = teamName + (stats ? " " + stats : "");
