@@ -3,56 +3,96 @@
 <head>
 <meta charset="UTF-8">
 <title>World Cup Sweepstake</title>
+
 <style>
-body { font-family: Arial; max-width: 1100px; margin:auto; padding:20px; background:#f5f7fb; }
-h1 { text-align:center; }
-.section { margin-top:30px; }
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
-.card { background:white; border-radius:12px; padding:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
-.name { font-weight:bold; margin-bottom:8px; }
-.team { display:flex; align-items:center; gap:8px; }
-img.flag { width:28px; height:20px; border-radius:3px; }
-.draw-container { background:white; padding:15px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
-.draw-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-.draw-item { padding:8px; border-bottom:1px solid #eee; font-size:14px; }
-.draw-title { font-weight:bold; margin-bottom:10px; }
+body {
+  font-family: Arial;
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+  background: #f5f7fb;
+}
+
+h1 {
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.name {
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+
+img.flag {
+  width: 28px;
+  height: 20px;
+  border-radius: 3px;
+}
 </style>
+
 </head>
+
 <body>
 
 <h1>🏆 World Cup Sweepstake</h1>
 
-<div class="section">
-  <div class="draw-container">
-    <div class="draw-title">📋 Official Draw (Locked)</div>
-    <div id="draw" class="draw-grid"></div>
-  </div>
-</div>
-
-<div id="list" class="grid section"></div>
+<div id="list" class="grid"></div>
 
 <script>
 let data = JSON.parse(localStorage.getItem("drawData")) || [];
 
+// Country → flag code
 const countryCodes = {
-"Brazil":"br","France":"fr","Argentina":"ar","England":"gb","Spain":"es","Germany":"de","Portugal":"pt","Netherlands":"nl",
-"Belgium":"be","Italy":"it","USA":"us","Mexico":"mx","Canada":"ca","Japan":"jp","South Korea":"kr","Australia":"au",
-"Morocco":"ma","Egypt":"eg","Senegal":"sn","Nigeria":"ng","Ghana":"gh","Ivory Coast":"ci","Algeria":"dz","Tunisia":"tn",
-"Qatar":"qa","Saudi Arabia":"sa","Iran":"ir","Iraq":"iq","UAE":"ae","China":"cn","India":"in","New Zealand":"nz",
-"Chile":"cl","Colombia":"co","Peru":"pe","Uruguay":"uy","Paraguay":"py","Bolivia":"bo","Costa Rica":"cr","Panama":"pa",
-"Honduras":"hn","Jamaica":"jm","Cuba":"cu","South Africa":"za","Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
+"Brazil":"br","France":"fr","Argentina":"ar",
+"Spain":"es","Germany":"de","Portugal":"pt","Netherlands":"nl",
+"Belgium":"be","Italy":"it","USA":"us","Mexico":"mx",
+"Canada":"ca","Japan":"jp","South Korea":"kr","Australia":"au",
+"Morocco":"ma","Egypt":"eg","Senegal":"sn","Nigeria":"ng",
+"Ghana":"gh","Ivory Coast":"ci","Algeria":"dz","Tunisia":"tn",
+"Qatar":"qa","Saudi Arabia":"sa","Iran":"ir","Iraq":"iq",
+"UAE":"ae","China":"cn","India":"in","New Zealand":"nz",
+"Chile":"cl","Colombia":"co","Peru":"pe","Uruguay":"uy",
+"Paraguay":"py","Bolivia":"bo","Costa Rica":"cr","Panama":"pa",
+"Honduras":"hn","Jamaica":"jm","Cuba":"cu","South Africa":"za",
+"Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
 };
 
-// ✅ Load CSV once (locked after first load)
+// ✅ Load CSV ONCE + LOCK
 if (data.length === 0) {
   fetch("./sweepstake.csv")
     .then(res => res.text())
     .then(text => {
+
+      // Remove Excel BOM
       text = text.replace(/^\uFEFF/, "");
+
+      // Handle Windows + Mac line endings
       const rows = text.trim().split(/\r?\n/);
 
       data = rows.slice(1).map(row => {
-        const cols = row.split(/[;,]/);
+        const cols = row.split(/[;,]/); // comma OR semicolon
+
         const name = cols[0];
         const team = cols[1];
 
@@ -65,11 +105,13 @@ if (data.length === 0) {
         };
       }).filter(Boolean);
 
-      localStorage.setItem("drawData", JSON.stringify(data)); // 🔒 lock it
+      // 🔒 lock results
+      localStorage.setItem("drawData", JSON.stringify(data));
+
       render();
     })
     .catch(() => {
-      document.getElementById("draw").innerHTML =
+      document.getElementById("list").innerHTML =
         "<p style='color:red;'>❌ Error loading CSV</p>";
     });
 } else {
@@ -78,28 +120,19 @@ if (data.length === 0) {
 
 function render() {
   const list = document.getElementById("list");
-  const draw = document.getElementById("draw");
-
   list.innerHTML = "";
-  draw.innerHTML = "";
 
-  // ✅ Draw follows CSV order exactly
-  data.forEach(player => {
-    const el = document.createElement("div");
-    el.className = "draw-item";
-    el.textContent = `${player.name} - ${player.team}`;
-    draw.appendChild(el);
-  });
-
-  // ✅ Cards with proper flag images
   data.forEach(player => {
     const div = document.createElement("div");
     div.className = "card";
 
-    const flagHTML = player.code
-    const flagHTML = player.code
-      ? `<img class="flag" src="https://flagcdn.com/w40/${player.code}.png">`
-      : "";
+    let flagHTML = "";
+
+    // ✅ SPECIAL CASE: England (proper flag)
+    if (player.team === "England") {
+      flagHTML = `<img class="flag" src="https://flagcdn.com/w40/gb-eng.pnglayer.code) {
+      flagHTML = `<img class="flag" src="https://flagcdn.com/w40/${player.code}.png`">`;
+    }
 
     div.innerHTML = `
       <div class="name">${player.name}</div>
