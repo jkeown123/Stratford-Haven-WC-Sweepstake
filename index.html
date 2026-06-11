@@ -30,15 +30,6 @@ h1 {
   margin-top: 0;
 }
 
-.prizes ul {
-  margin-top: 5px;
-  margin-bottom: 15px;
-}
-
-.prizes li {
-  margin-bottom: 5px;
-}
-
 /* Cards */
 .grid {
   display: grid;
@@ -102,33 +93,26 @@ img.flag {
 <script>
 const list = document.getElementById("list");
 
-// ✅ OFFICIAL 2026 TEAMS
+// ✅ OFFICIAL TEAMS
 const countryCodes = {
-
-  // North America
   "USA":"us","Mexico":"mx","Canada":"ca",
   "Panama":"pa","Haiti":"ht","Curaçao":"cw",
 
-  // South America
   "Argentina":"ar","Brazil":"br","Colombia":"co",
   "Ecuador":"ec","Paraguay":"py","Uruguay":"uy",
 
-  // Europe
   "England":"gb-eng","France":"fr","Spain":"es","Portugal":"pt",
   "Germany":"de","Netherlands":"nl","Belgium":"be","Croatia":"hr",
   "Switzerland":"ch","Norway":"no","Scotland":"gb-sct","Austria":"at",
   "Bosnia and Herzegovina":"ba","Sweden":"se","Türkiye":"tr","Czechia":"cz",
 
-  // Africa
   "Algeria":"dz","Cabo Verde":"cv","DR Congo":"cd","Ivory Coast":"ci",
   "Egypt":"eg","Ghana":"gh","Morocco":"ma","Senegal":"sn",
   "South Africa":"za","Tunisia":"tn",
 
-  // Asia
   "Japan":"jp","IR Iran":"ir","South Korea":"kr","Saudi Arabia":"sa",
   "Qatar":"qa","Australia":"au","Uzbekistan":"uz","Jordan":"jo","Iraq":"iq",
 
-  // Oceania
   "New Zealand":"nz"
 };
 
@@ -160,7 +144,6 @@ fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
     list.innerHTML = "<p style='color:red'>❌ Failed to load CSV</p>";
   });
 
-
 // ✅ RENDER CARDS
 function render(data) {
   list.innerHTML = "";
@@ -171,15 +154,11 @@ function render(data) {
 
     let flagHTML = "";
 
-    // England special case
-      const code = countryCodes[player.team];
-      if (code) {
-        flagHTML = 'https://flagcdn.com/w40/';
-      }
-    }
+    const code = countryCodes[player.team];
 
-    div.innerHTML =
-      '<div class="name">' + player.name + '</div>' +
+    if (code) {
+      // ✅ FIX: proper image tag + correct URL
+      flagHTML = '<img class="flag" src="https://flagcdn.com/w40/' + code +   '<div class="name">' + player.name + '</div>' +
       '<div class="team">' + flagHTML + ' ' + player.team + '</div>';
 
     list.appendChild(div);
