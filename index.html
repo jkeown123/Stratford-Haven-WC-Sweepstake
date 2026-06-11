@@ -4,23 +4,80 @@
 <meta charset="UTF-8">
 <title>World Cup Sweepstake</title>
 <style>
-body { font-family: Arial; max-width: 1100px; margin:auto; padding:20px; background:#f5f7fb; }
+body {
+  font-family: Arial;
+  max-width: 1100px;
+  margin:auto;
+  padding:20px;
+  background:#f5f7fb;
+}
+
 h1 { text-align:center; }
-input { width:100%; padding:12px; margin:10px 0; border-radius:8px; border:1px solid #ccc; }
+
+input {
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
 
 .section { margin-top:30px; }
 
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:15px; }
-.card { background:white; border-radius:12px; padding:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
-.name { font-weight:bold; margin-bottom:8px; }
-.team { display:flex; align-items:center; gap:8px; }
-img.flag { width:28px; height:20px; border-radius:3px; }
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:15px;
+}
 
-/* Draw visual */
-.draw-container { background:white; padding:15px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
-.draw-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-.draw-item { padding:8px; border-bottom:1px solid #eee; font-size:14px; }
-.draw-title { font-weight:bold; margin-bottom:10px; }
+.card {
+  background:white;
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.name {
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.team {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+img.flag {
+  width:28px;
+  height:20px;
+  border-radius:3px;
+}
+
+/* Draw section */
+.draw-container {
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.draw-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.draw-item {
+  padding:8px;
+  border-bottom:1px solid #eee;
+  font-size:14px;
+}
+
+.draw-title {
+  font-weight:bold;
+  margin-bottom:10px;
+}
 </style>
 </head>
 
@@ -28,12 +85,9 @@ img.flag { width:28px; height:20px; border-radius:3px; }
 
 <h1>🏆 World Cup Sweepstake</h1>
 
-<p><b>Upload your Excel (CSV)</b></p>
-<input type="file" id="fileInput" accept=".csv">
-
 <input id="search" placeholder="Search by name or team...">
 
-<!-- Draw display -->
+<!-- DRAW -->
 <div class="section">
   <div class="draw-container">
     <div class="draw-title">📋 Full Draw Overview</div>
@@ -41,7 +95,7 @@ img.flag { width:28px; height:20px; border-radius:3px; }
   </div>
 </div>
 
-<!-- Cards -->
+<!-- CARDS -->
 <div id="list" class="grid section"></div>
 
 <script>
@@ -66,69 +120,3 @@ const countryCodes = {
 "Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
 };
 
-fileInput.addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  const reader = new FileReader();
-
-  reader.onload = function(event) {
-    const rows = event.target.result.split("\n");
-
-    data = rows.slice(1).map(row => {
-      const [name, team] = row.split(",");
-      if (!name || !team) return null;
-
-      return {
-        name: name.trim(),
-        team: team.trim(),
-        code: countryCodes[team.trim()] || ""
-      };
-    }).filter(Boolean);
-
-    render();
-  };
-
-  reader.readAsText(file);
-});
-
-function render() {
-  const value = search.value.toLowerCase();
-
-  list.innerHTML = "";
-  draw.innerHTML = "";
-
-  const filtered = data.filter(p =>
-    p.name.toLowerCase().includes(value) ||
-    p.team.toLowerCase().includes(value)
-  );
-
-  // Draw overview (simple ordered list)
-  data.forEach(player => {
-    const el = document.createElement("div");
-    el.className = "draw-item";
-    el.innerHTML = `${player.name} - ${player.team}`;
-    draw.appendChild(el);
-  });
-
-  // Cards
-  filtered.forEach(player => {
-    const div = document.createElement("div");
-    div.className = "card";
-
-    const flagHTML = player.code
-      ? `https://flagcdn.com/w40/${player.code}.png`
-      : "";
-
-    div.innerHTML = `
-      <div class="name">${player.name}</div>
-      <div class="team">${flagHTML}${player.team}</div>
-    `;
-
-    list.appendChild(div);
-  });
-}
-
-search.addEventListener("input", render);
-</script>
-
-</body>
-</html>
