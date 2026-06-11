@@ -17,11 +17,33 @@ h1 {
   text-align: center;
 }
 
+/* Prize box */
+.prizes {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  margin-bottom: 25px;
+}
+
+.prizes h2 {
+  margin-top: 0;
+}
+
+.prizes ul {
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.prizes li {
+  margin-bottom: 5px;
+}
+
+/* Cards */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 15px;
-  margin-top: 30px;
 }
 
 .card {
@@ -55,42 +77,62 @@ img.flag {
 
 <h1>🏆 World Cup Sweepstake</h1>
 
+<!-- ✅ PRIZES -->
+<div class="prizes">
+  <h2>💰 Prize Breakdown</h2>
+
+  <p><strong>Main Prizes:</strong></p>
+  <ul>
+    <li>🥇 Winner – £75</li>
+    <li>🥈 Runner-up – £40</li>
+    <li>🥉 Losing Semi-Finalists – £15 each</li>
+  </ul>
+
+  <p><strong>Wooden Spoon Awards:</strong></p>
+  <ul>
+    <li>📉 Most goals conceded (group stage) – £15</li>
+    <li>🟥 Most red cards (yellow cards tie-break) – £15</li>
+    <li>⚽ Fewest goals scored – £15</li>
+  </ul>
+</div>
+
+<!-- ✅ LIST -->
 <div id="list" class="grid"></div>
 
 <script>
 const list = document.getElementById("list");
 
-// ✅ country codes (official 2026 teams)
+// ✅ OFFICIAL 2026 TEAMS
 const countryCodes = {
 
-  // 🌎 North America (hosts + qualifiers)
+  // North America
   "USA":"us","Mexico":"mx","Canada":"ca",
   "Panama":"pa","Haiti":"ht","Curaçao":"cw",
 
-  // 🌎 South America
+  // South America
   "Argentina":"ar","Brazil":"br","Colombia":"co",
   "Ecuador":"ec","Paraguay":"py","Uruguay":"uy",
 
-  // 🌍 Europe
+  // Europe
   "England":"gb-eng","France":"fr","Spain":"es","Portugal":"pt",
   "Germany":"de","Netherlands":"nl","Belgium":"be","Croatia":"hr",
   "Switzerland":"ch","Norway":"no","Scotland":"gb-sct","Austria":"at",
   "Bosnia and Herzegovina":"ba","Sweden":"se","Türkiye":"tr","Czechia":"cz",
 
-  // 🌍 Africa
+  // Africa
   "Algeria":"dz","Cabo Verde":"cv","DR Congo":"cd","Ivory Coast":"ci",
   "Egypt":"eg","Ghana":"gh","Morocco":"ma","Senegal":"sn",
   "South Africa":"za","Tunisia":"tn",
 
-  // 🌏 Asia
+  // Asia
   "Japan":"jp","IR Iran":"ir","South Korea":"kr","Saudi Arabia":"sa",
   "Qatar":"qa","Australia":"au","Uzbekistan":"uz","Jordan":"jo","Iraq":"iq",
 
-  // 🌊 Oceania
+  // Oceania
   "New Zealand":"nz"
 };
 
-// ✅ fetch CSV (correct path)
+// ✅ FETCH CSV
 fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
   .then(response => response.text())
   .then(text => {
@@ -115,10 +157,10 @@ fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
   })
   .catch(err => {
     console.error(err);
-    list.innerHTML = "<p style='color:red'>❌ CSV failed to load</p>";
+    list.innerHTML = "<p style='color:red'>❌ Failed to load CSV</p>";
   });
 
-// ✅ render
+// ✅ RENDER
 function render(data) {
   list.innerHTML = "";
 
@@ -127,11 +169,15 @@ function render(data) {
     div.className = "card";
 
     let flagHTML = "";
+    const code = countryCodes[player.team];
 
-    // ✅ IMPORTANT: no broken template strings
+    if (code) {
+      flagHTML = 'https://flagcdn.com/w40/';
+    }
+
     div.innerHTML =
-      '<div class=\"name\">' + player.name + '</div>' +
-      '<div class=\"team\">' + flagHTML + ' ' + player.team + '</div>';
+      '<div class="name">' + player.name + '</div>' +
+      '<div class="team">' + flagHTML + ' ' + player.team + '</div>';
 
     list.appendChild(div);
   });
