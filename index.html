@@ -101,7 +101,7 @@ const countryCodes = {
 };
 
 // ✅ FETCH CSV
-fetch("sweepstake.csv")
+fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
   .then(res => res.text())
   .then(text => {
     const rows = text.trim().split(/\r?\n/);
