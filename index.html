@@ -48,10 +48,10 @@ h1 {
   margin-bottom: 25px;
 }
 
-/* ✅ GROUP GRID */
+/* ✅ RESPONSIVE GRID (auto adjusts on zoom) */
 .groups {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
 }
 
@@ -62,22 +62,32 @@ h1 {
   padding-bottom: 5px;
 }
 
-/* ✅ TEAM ROWS */
+/* ✅ TEAM ROW */
 .team {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 8px 0;
+  gap: 8px;
+  margin: 6px 0;
 }
 
+/* ✅ PLAYER NAMES */
 .player {
   font-weight: bold;
-  min-width: 140px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ✅ TEAM TEXT (prevents overflow) */
+.team span:last-child {
+  flex: 1.3;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 /* ✅ STATS */
 .stats {
   color: #90caf9;
+  white-space: nowrap;
 }
 
 /* ✅ FLAGS */
@@ -85,12 +95,13 @@ img.flag {
   width: 24px;
   height: 18px;
   border-radius: 3px;
+  flex-shrink: 0;
 }
 
-/* ✅ HOVER EFFECT (nice touch) */
+/* ✅ HOVER EFFECT */
 .group:hover {
   transform: translateY(-3px);
-  transition: 0.2s;
+  transition: 0.2s ease;
 }
 
 </style>
@@ -101,7 +112,7 @@ img.flag {
 
 <!-- ✅ HEADER WITH LOGO -->
 <div class="header">
-  <img src="logo.png" alt="Club Logo">
+  <img src="logo.png" alt="Stratford Haven FC Logo">
   <h1>🏆 Stratford Haven Sweepstake</h1>
 </div>
 
@@ -181,7 +192,6 @@ fetch("sweepstake.csv?v=" + Date.now())
     renderGroups(data);
   });
 
-// ✅ FORMAT NAMES
 function formatName(p) {
   return p.name2 ? p.name1 + ", " + p.name2 : p.name1;
 }
@@ -229,7 +239,8 @@ function renderGroups(data) {
         if (player.reds) stats += player.reds + "x🟥";
       }
 
-      teamSpan.innerHTML = teamName +
+      teamSpan.innerHTML =
+        teamName +
         (stats ? '<span class="stats"> ' + stats + '</span>' : '');
 
       row.appendChild(teamSpan);
