@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>World Cup Sweepstake</title>
+  <style>
+    body { font-family: Arial; max-width: 900px; margin: auto; padding: 20px; }
+    h1 { text-align: center; }
+    button { padding: 10px 15px; font-size: 16px; margin-bottom: 20px; cursor: pointer; }
+    input { width: 100%; padding: 10px; margin: 10px 0 20px; font-size: 16px; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 15px; margin-bottom: 10px; }
+    .row { display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+<h1>🏆 World Cup Sweepstake</h1>
+
+
+<button onclick="drawTeams()">🎲 Run Mock Draw</button>
+
+
+<input id="search" placeholder="Search by name or team...">
+<div id="list"></div>
+
+
+<script>
+const players = [
+"Alex","Ben","Chris","Dan","Ethan","Finn","George","Harry","Isaac","Jack",
+"Kyle","Leo","Matt","Noah","Owen","Paul","Quinn","Ryan","Sam","Tom",
+"Umar","Vince","Will","Xavier","Yas","Zack","Aaron","Blake","Cameron","Dean",
+"Elliot","Freddie","Gavin","Hugo","Ibrahim","Jon","Kieran","Liam","Mike","Nathan",
+"Oscar","Paddy","Reece","Sean","Tyler","Victor","Wes","Zane"
+];
+
+const teams = [
+"Brazil","France","Argentina","England","Spain","Germany","Portugal","Netherlands",
+"Belgium","Italy","USA","Mexico","Canada","Japan","South Korea","Australia",
+"Morocco","Egypt","Senegal","Nigeria","Ghana","Ivory Coast","Algeria","Tunisia",
+"Qatar","Saudi Arabia","Iran","Iraq","UAE","China","India","New Zealand",
+"Chile","Colombia","Peru","Uruguay","Paraguay","Bolivia","Costa Rica","Panama",
+"Honduras","Jamaica","Cuba","South Africa","Cameroon","Mali","Zambia","Uganda"
+];
+let data = [];
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+function drawTeams() {
+  const shuffledTeams = [...teams];
+  shuffle(shuffledTeams);
+  data = players.map((name, i) => ({
+    name,
+    team: shuffledTeams[i]
+  }));
+  render();
+}
+const list = document.getElementById("list");
+const search = document.getElementById("search");
+
+
+function render() {
+  const value = search.value.toLowerCase();
+  list.innerHTML = "";
+
+
+  const filtered = data.filter(p =>
+    p.name.toLowerCase().includes(value) ||
+    p.team.toLowerCase().includes(value)
+  );
+
+
+  if (filtered.length === 0) {
+    list.innerHTML = "<p>No results found</p>";
+    return;
+  }
+
+
+  filtered.forEach(player => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+
+    div.innerHTML = `
+      <div class="row">
+        <strong>${player.name}</strong>
+      </div>
+      <div>🌍 Team: ${player.team}</div>
+    `;
+
+
+    list.appendChild(div);
+  });
+}
+
+search.addEventListener("input", render);
+
+// Initial empty render
+render();
+</script>
+
+</body>
