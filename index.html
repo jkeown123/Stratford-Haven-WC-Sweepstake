@@ -157,33 +157,6 @@ function formatName(p) {
   return p.name2 ? p.name1 + ", " + p.name2 : p.name1;
 }
 
-// ✅ LEADERBOARD
-function renderLeaderboard(data) {
-
-  const leaderboard = document.getElementById("leaderboard");
-
-  // sort helpers
-  const topGoals = [...data].sort((a,b)=>b.goals - a.goals)[0];
-  const mostCards = [...data].sort((a,b)=>{
-    if (b.reds !== a.reds) return b.reds - a.reds;
-    return b.yellows - a.yellows;
-  })[0];
-  const fewestGoals = [...data].sort((a,b)=>a.goals - b.goals)[0];
-
-  leaderboard.innerHTML = `
-    <h2>📊 Live Leaderboard</h2>
-
-    <p><strong>🏆 Top Scorer (£75):</strong><br>
-    ${formatName(topGoals)} (${topGoals.team}) — ${topGoals.goals} ⚽</p>
-
-    <p><strong>🟥 Most Red Cards (£15):</strong><br>
-    ${formatName(mostCards)} (${mostCards.team}) — ${mostCards.reds} 🟥 ${mostCards.yellows} 🟨</p>
-
-    <p><strong>⚽ Fewest Goals (£15):</strong><br>
-    ${formatName(fewestGoals)} (${fewestGoals.team}) — ${fewestGoals.goals} ⚽</p>
-  `;
-}
-
 // ✅ GROUPS
 function renderGroups(data) {
 
