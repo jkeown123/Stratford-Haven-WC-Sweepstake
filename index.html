@@ -160,7 +160,8 @@ fetch("/Stratford-Haven-WC-Sweepstake/sweepstake.csv")
     list.innerHTML = "<p style='color:red'>❌ Failed to load CSV</p>";
   });
 
-// ✅ RENDER
+
+// ✅ RENDER CARDS
 function render(data) {
   list.innerHTML = "";
 
@@ -169,10 +170,12 @@ function render(data) {
     div.className = "card";
 
     let flagHTML = "";
-    const code = countryCodes[player.team];
 
-    if (code) {
-      flagHTML = 'https://flagcdn.com/w40/' + code + '.png">';
+    // England special case
+    const code = countryCodes[player.team];
+      if (code) {
+        flagHTML = 'https://flagcdn.com/w40/';
+      }
     }
 
     div.innerHTML =
