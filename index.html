@@ -74,12 +74,18 @@ img.flag {
 
 <div class="prizes">
   <h2>💰 Prize Breakdown</h2>
+
+  <p><strong>Main Prizes:</strong></p>
   <ul>
     <li>🥇 Winner – £75</li>
     <li>🥈 Runner-up – £40</li>
     <li>🥉 Losing Semi-Finalists – £15 each</li>
-    <li>📉 Most goals conceded – £15</li>
-    <li>🟥 Most red cards – £15</li>
+  </ul>
+
+  <p><strong>Wooden Spoon Awards:</strong></p>
+  <ul>
+    <li>📉 Most goals conceded (group stage) – £15</li>
+    <li>🟥 Most red cards (yellow cards tie-break) – £15</li>
     <li>⚽ Fewest goals scored – £15</li>
   </ul>
 </div>
@@ -190,9 +196,9 @@ function renderGroups(data) {
 
       let stats = "";
       if (player) {
-        if (player.goals) stats += player.goals + "x ⚽ ";
-        if (player.yellows) stats += player.yellows + "x 🟨 ";
-        if (player.reds) stats += player.reds + "x 🟥";
+        if (player.goals) stats += player.goals + "x⚽ ";
+        if (player.yellows) stats += player.yellows + "x🟨 ";
+        if (player.reds) stats += player.reds + "x🟥";
       }
 
       teamSpan.textContent = teamName + (stats ? " " + stats : "");
