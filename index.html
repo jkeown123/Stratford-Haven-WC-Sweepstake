@@ -34,14 +34,12 @@ h1 {
 .name {
   font-weight: bold;
   margin-bottom: 8px;
-  font-size: 16px;
 }
 
 .team {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
 }
 
 img.flag {
@@ -60,66 +58,50 @@ img.flag {
 <div id="list" class="grid"></div>
 
 <script>
-let data = JSON.parse(localStorage.getItem("drawData")) || [];
+const list = document.getElementById("list");
 
-// Country → flag code
+// Country → code
 const countryCodes = {
-"Brazil":"br","France":"fr","Argentina":"ar",
-"Spain":"es","Germany":"de","Portugal":"pt","Netherlands":"nl",
-"Belgium":"be","Italy":"it","USA":"us","Mexico":"mx",
-"Canada":"ca","Japan":"jp","South Korea":"kr","Australia":"au",
-"Morocco":"ma","Egypt":"eg","Senegal":"sn","Nigeria":"ng",
-"Ghana":"gh","Ivory Coast":"ci","Algeria":"dz","Tunisia":"tn",
-"Qatar":"qa","Saudi Arabia":"sa","Iran":"ir","Iraq":"iq",
-"UAE":"ae","China":"cn","India":"in","New Zealand":"nz",
-"Chile":"cl","Colombia":"co","Peru":"pe","Uruguay":"uy",
-"Paraguay":"py","Bolivia":"bo","Costa Rica":"cr","Panama":"pa",
-"Honduras":"hn","Jamaica":"jm","Cuba":"cu","South Africa":"za",
-"Cameroon":"cm","Mali":"ml","Zambia":"zm","Uganda":"ug"
+  "Brazil":"br","France":"fr","Argentina":"ar","Spain":"es","Germany":"de",
+  "Portugal":"pt","Netherlands":"nl","Belgium":"be","Italy":"it",
+  "USA":"us","Mexico":"mx","Canada":"ca","Japan":"jp","South Korea":"kr",
+  "Australia":"au","Morocco":"ma","Egypt":"eg","Senegal":"sn",
+  "Nigeria":"ng","Ghana":"gh","Ivory Coast":"ci","Algeria":"dz","Tunisia":"tn",
+  "Qatar":"qa","Saudi Arabia":"sa","Iran":"ir","Iraq":"iq","UAE":"ae",
+  "China":"cn","India":"in","New Zealand":"nz","Chile":"cl","Colombia":"co",
+  "Peru":"pe","Uruguay":"uy","Paraguay":"py","Bolivia":"bo",
+  "Costa Rica":"cr","Panama":"pa","Honduras":"hn","Jamaica":"jm",
+  "Cuba":"cu","South Africa":"za","Cameroon":"cm","Mali":"ml",
+  "Zambia":"zm","Uganda":"ug"
 };
 
-// ✅ Load CSV ONCE + LOCK
-if (data.length === 0) {
-  fetch("./sweepstake.csv")
-    .then(res => res.text())
-    .then(text => {
+// ✅ LOAD CSV
+fetch("./sweepstake.csv")
+  .then(response => response.text())
+  .then(text => {
+    text = text.replace(/^\uFEFF/, "");
+    const rows = text.trim().split(/\r?\n/);
 
-      // Remove Excel BOM
-      text = text.replace(/^\uFEFF/, "");
+    const data = rows.slice(1).map(row => {
+      const [name, team] = row.split(/[;,]/);
 
-      // Handle Windows + Mac line endings
-      const rows = text.trim().split(/\r?\n/);
+      if (!name || !team) return null;
 
-      data = rows.slice(1).map(row => {
-        const cols = row.split(/[;,]/); // comma OR semicolon
+      return {
+        name: name.trim(),
+        team: team.trim()
+      };
+    }).filter(Boolean);
 
-        const name = cols[0];
-        const team = cols[1];
+    render(data);
+  })
+  .catch(err => {
+    console.error(err);
+    list.innerHTML = "<p style='color:red;'>❌ CSV failed to load</p>";
+  });
 
-        if (!name || !team) return null;
-
-        return {
-          name: name.trim(),
-          team: team.trim(),
-          code: countryCodes[team.trim()] || ""
-        };
-      }).filter(Boolean);
-
-      // 🔒 lock results
-      localStorage.setItem("drawData", JSON.stringify(data));
-
-      render();
-    })
-    .catch(() => {
-      document.getElementById("list").innerHTML =
-        "<p style='color:red;'>❌ Error loading CSV</p>";
-    });
-} else {
-  render();
-}
-
-function render() {
-  const list = document.getElementById("list");
+// ✅ RENDER
+function render(data) {
   list.innerHTML = "";
 
   data.forEach(player => {
@@ -128,13 +110,12 @@ function render() {
 
     let flagHTML = "";
 
-    // ✅ SPECIAL CASE: England (proper flag)
+    // ✅ England special case
     if (player.team === "England") {
-      flagHTML = `<img class="flag" src="https://flagcdn.com/w40/gb-eng.pnglayer.code) {
-      flagHTML = `<img class="flag" src="https://flagcdn.com/w40/${player.code}.png`">`;
-    }
-
-    div.innerHTML = `
+      flagHTML = `<img class="flag" src="https://flagcdn.com/w40/gb
+      const code = countryCodes[player.team];
+      if (code) {
+        flagHTML = `<img class="flag" src="https://flagcdn.com/w40/${code}.pngiv.innerHTML = `
       <div class="name">${player.name}</div>
       <div class="team">${flagHTML} ${player.team}</div>
     `;
