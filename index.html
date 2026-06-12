@@ -273,7 +273,7 @@ function updateTracker(data) {
     `📉 Most goals conceded – £15 → <strong>${concededLeaders.map(p => p.team).join(", ")}</strong> (${maxConceded}x🥅)`;
 
   document.getElementById("mostReds").innerHTML =
-    `🟥 Most red cards – £15 → <strong>${redLeaders.map(p => p.team).join(", ")}</strong> (${maxReds}x🟥)`;
+    `🟥 Most red cards (yellows tie-break) – £15 → <strong>${redLeaders.map(p => p.team).join(", ")}</strong> (${maxReds}x🟥)`;
 
   document.getElementById("fewestGoals").innerHTML =
     `⚽ Fewest goals scored – £15 → <strong>${goalLeaders.map(p => p.team).join(", ")}</strong> (${minGoals}x⚽)`;
