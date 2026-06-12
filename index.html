@@ -150,8 +150,33 @@ let concededTeams = new Set();
 let redTeams = new Set();
 let goalTeams = new Set();
 
-const countryCodes = { /* same as your original */ };
-const groupMap = { /* same as your original */ };
+
+const countryCodes = {
+  "USA":"us","Mexico":"mx","Canada":"ca","Panama":"pa","Haiti":"ht","Curaçao":"cw",
+  "Argentina":"ar","Brazil":"br","Colombia":"co","Ecuador":"ec","Paraguay":"py","Uruguay":"uy",
+  "England":"gb-eng","France":"fr","Spain":"es","Portugal":"pt","Germany":"de",
+  "Netherlands":"nl","Belgium":"be","Croatia":"hr","Switzerland":"ch","Norway":"no",
+  "Scotland":"gb-sct","Austria":"at","Bosnia and Herzegovina":"ba","Sweden":"se",
+  "Türkiye":"tr","Czechia":"cz",
+  "Algeria":"dz","Cabo Verde":"cv","DR Congo":"cd","Ivory Coast":"ci",
+  "Egypt":"eg","Ghana":"gh","Morocco":"ma","Senegal":"sn","South Africa":"za","Tunisia":"tn",
+  "Japan":"jp","IR Iran":"ir","South Korea":"kr","Saudi Arabia":"sa",
+  "Qatar":"qa","Australia":"au","Uzbekistan":"uz","Jordan":"jo","Iraq":"iq",
+  "New Zealand":"nz"};
+const groupMap = {
+  "Group A": ["Mexico","South Africa","South Korea","Czechia"],
+  "Group B": ["Canada","Bosnia and Herzegovina","Qatar","Switzerland"],
+  "Group C": ["Brazil","Morocco","Haiti","Scotland"],
+  "Group D": ["USA","Paraguay","Türkiye","Australia"],
+  "Group E": ["Germany","Curaçao","Ivory Coast","Ecuador"],
+  "Group F": ["Netherlands","Japan","Sweden","Tunisia"],
+  "Group G": ["Belgium","Egypt","IR Iran","New Zealand"],
+  "Group H": ["Spain","Cabo Verde","Saudi Arabia","Uruguay"],
+  "Group I": ["France","Senegal","Iraq","Norway"],
+  "Group J": ["Argentina","Algeria","Austria","Jordan"],
+  "Group K": ["Portugal","DR Congo","Uzbekistan","Colombia"],
+  "Group L": ["England","Croatia","Ghana","Panama"]};
+
 
 fetch("sweepstake.csv?v=" + Date.now())
   .then(res => res.text())
