@@ -11,7 +11,7 @@ Jake,Haden,Canada,0,0,0,0
 Steve G,Tom M,Colombia,0,0,0,0
 Adam W,Phil D,Croatia,0,0,0,0
 Matt S,Club,Curaçao,0,0,0,0
-Chris Hayes,Tel,Czechia,0,0,0,0
+Chris Hayes,Tel,Czechia,1,0,0,2
 Dave,Neil H,DR Congo,0,0,0,0
 Matt H,Martin R,Ecuador,0,0,0,0
 Haden,Fergus,Egypt,0,0,0,0
@@ -25,7 +25,7 @@ Adam W,Rehan,Iraq,0,0,0,0
 Jez,Haden,Ivory Coast,0,0,0,0
 Nic,Phil D,Japan,0,0,0,0
 Bradders,Reece,Jordan,0,0,0,0
-Club,Comhnall,Mexico,0,0,0,0
+Club,Comhnall,Mexico,2,1,1,0
 Fraser R,Ben P,Morocco,0,0,0,0
 Max,Parksey,Netherlands,0,0,0,0
 Harry K,Ben P,New Zealand,0,0,0,0
@@ -37,8 +37,8 @@ Max,Joe K,Qatar,0,0,0,0
 Fraser R,Fraser W,Saudi Arabia,0,0,0,0
 Alex B,Hubbs,Scotland,0,0,0,0
 Jake,Zack M,Senegal,0,0,0,0
-Seb,Club,South Africa,0,0,0,0
-Steve G,George,South Korea,0,0,0,0
+Seb,Club,South Africa,0,2,2,2
+Steve G,George,South Korea,2,1,0,1
 Parksey,Jon U,Spain,0,0,0,0
 Alex B,Wilks,Sweden,0,0,0,0
 Haden,Tristan,Switzerland,0,0,0,0
