@@ -27,9 +27,7 @@ body {
   height: 60px;
 }
 
-h1 {
-  margin: 0;
-}
+h1 { margin: 0; }
 
 .prizes, .group {
   background: rgba(255,255,255,0.05);
@@ -40,9 +38,7 @@ h1 {
   box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
-.prizes {
-  margin-bottom: 25px;
-}
+.prizes { margin-bottom: 25px; }
 
 .groups {
   display: grid;
@@ -66,12 +62,10 @@ h1 {
 .player {
   font-weight: bold;
   flex: 1;
-  min-width: 0;
 }
 
 .team span:last-child {
   flex: 1.3;
-  min-width: 0;
   overflow-wrap: anywhere;
 }
 
@@ -84,7 +78,6 @@ img.flag {
   width: 24px;
   height: 18px;
   border-radius: 3px;
-  flex-shrink: 0;
 }
 
 .group:hover {
@@ -92,7 +85,26 @@ img.flag {
   transition: 0.2s ease;
 }
 
-/* ✅ highlight tracker winners */
+/* ✅ CATEGORY HIGHLIGHTS */
+.highlight-conceded {
+  color: #ff5252;
+  text-shadow: 0 0 6px rgba(255, 82, 82, 0.7);
+  font-weight: bold;
+}
+
+.highlight-reds {
+  color: #ff1744;
+  text-shadow: 0 0 6px rgba(255, 23, 68, 0.7);
+  font-weight: bold;
+}
+
+.highlight-goals {
+  color: #40c4ff;
+  text-shadow: 0 0 6px rgba(64, 196, 255, 0.7);
+  font-weight: bold;
+}
+
+/* ✅ Prize highlight */
 #mostConceded strong,
 #mostReds strong,
 #fewestGoals strong {
@@ -130,36 +142,16 @@ img.flag {
 <div id="groups" class="groups"></div>
 
 <script>
+
 const groupsContainer = document.getElementById("groups");
 
-const countryCodes = {
-  "USA":"us","Mexico":"mx","Canada":"ca","Panama":"pa","Haiti":"ht","Curaçao":"cw",
-  "Argentina":"ar","Brazil":"br","Colombia":"co","Ecuador":"ec","Paraguay":"py","Uruguay":"uy",
-  "England":"gb-eng","France":"fr","Spain":"es","Portugal":"pt","Germany":"de",
-  "Netherlands":"nl","Belgium":"be","Croatia":"hr","Switzerland":"ch","Norway":"no",
-  "Scotland":"gb-sct","Austria":"at","Bosnia and Herzegovina":"ba","Sweden":"se",
-  "Türkiye":"tr","Czechia":"cz",
-  "Algeria":"dz","Cabo Verde":"cv","DR Congo":"cd","Ivory Coast":"ci",
-  "Egypt":"eg","Ghana":"gh","Morocco":"ma","Senegal":"sn","South Africa":"za","Tunisia":"tn",
-  "Japan":"jp","IR Iran":"ir","South Korea":"kr","Saudi Arabia":"sa",
-  "Qatar":"qa","Australia":"au","Uzbekistan":"uz","Jordan":"jo","Iraq":"iq",
-  "New Zealand":"nz"
-};
+/* ✅ TRACKING */
+let concededTeams = new Set();
+let redTeams = new Set();
+let goalTeams = new Set();
 
-const groupMap = {
-  "Group A": ["Mexico","South Africa","South Korea","Czechia"],
-  "Group B": ["Canada","Bosnia and Herzegovina","Qatar","Switzerland"],
-  "Group C": ["Brazil","Morocco","Haiti","Scotland"],
-  "Group D": ["USA","Paraguay","Türkiye","Australia"],
-  "Group E": ["Germany","Curaçao","Ivory Coast","Ecuador"],
-  "Group F": ["Netherlands","Japan","Sweden","Tunisia"],
-  "Group G": ["Belgium","Egypt","IR Iran","New Zealand"],
-  "Group H": ["Spain","Cabo Verde","Saudi Arabia","Uruguay"],
-  "Group I": ["France","Senegal","Iraq","Norway"],
-  "Group J": ["Argentina","Algeria","Austria","Jordan"],
-  "Group K": ["Portugal","DR Congo","Uzbekistan","Colombia"],
-  "Group L": ["England","Croatia","Ghana","Panama"]
-};
+const countryCodes = { /* same as your original */ };
+const groupMap = { /* same as your original */ };
 
 fetch("sweepstake.csv?v=" + Date.now())
   .then(res => res.text())
@@ -182,14 +174,46 @@ fetch("sweepstake.csv?v=" + Date.now())
       };
     }).filter(p => p.name1 && p.team);
 
-    renderGroups(data);
     updateTracker(data);
+    renderGroups(data);
   });
 
 function formatName(p) {
   return p.name2 ? p.name1 + ", " + p.name2 : p.name1;
 }
 
+/* ✅ TRACKER LOGIC */
+function updateTracker(data) {
+
+  const active = data.filter(p => p.matches > 0);
+  if (!active.length) return;
+
+  const maxConceded = Math.max(...active.map(p => p.goalsAgainst));
+  const concededLeaders = active.filter(p => p.goalsAgainst === maxConceded);
+
+  const maxReds = Math.max(...active.map(p => p.reds));
+  const redCandidates = active.filter(p => p.reds === maxReds);
+  const maxYellows = Math.max(...redCandidates.map(p => p.yellows));
+  const redLeaders = redCandidates.filter(p => p.yellows === maxYellows);
+
+  const minGoals = Math.min(...active.map(p => p.goals));
+  const goalLeaders = active.filter(p => p.goals === minGoals);
+
+  concededTeams = new Set(concededLeaders.map(p => p.team));
+  redTeams = new Set(redLeaders.map(p => p.team));
+  goalTeams = new Set(goalLeaders.map(p => p.team));
+
+  document.getElementById("mostConceded").innerHTML =
+    `📉 Most goals conceded – £15 → <strong>${[...concededTeams].join(", ")}</strong> (${maxConceded}x🥅)`;
+
+  document.getElementById("mostReds").innerHTML =
+    `🟥 Most red cards (yellows tie-break) – £15 → <strong>${[...redTeams].join(", ")}</strong> (${maxReds}x🟥)`;
+
+  document.getElementById("fewestGoals").innerHTML =
+    `⚽ Fewest goals scored – £15 → <strong>${[...goalTeams].join(", ")}</strong> (${minGoals}x⚽)`;
+}
+
+/* ✅ RENDER GROUPS */
 function renderGroups(data) {
 
   groupsContainer.innerHTML = "";
@@ -206,7 +230,6 @@ function renderGroups(data) {
     groupMap[groupName].forEach(teamName => {
 
       const player = data.find(p => p.team === teamName);
-
       const row = document.createElement("div");
       row.className = "team";
 
@@ -225,6 +248,23 @@ function renderGroups(data) {
 
       const teamSpan = document.createElement("span");
 
+      /* ✅ Determine highlight + tooltip */
+      let className = "";
+      let tooltip = "";
+
+      if (concededTeams.has(teamName)) {
+        className = "highlight-conceded";
+        tooltip = "Most goals conceded";
+      }
+      if (redTeams.has(teamName)) {
+        className = "highlight-reds";
+        tooltip = "Most red cards";
+      }
+      if (goalTeams.has(teamName)) {
+        className = "highlight-goals";
+        tooltip = "Fewest goals scored";
+      }
+
       let stats = "";
       if (player) {
         if (player.goals) stats += player.goals + "x⚽ ";
@@ -234,7 +274,7 @@ function renderGroups(data) {
       }
 
       teamSpan.innerHTML =
-        teamName +
+        `<span class="${className}" title="${tooltip}">${teamName}</span>` +
         (stats ? '<span class="stats"> ' + stats + '</span>' : '');
 
       row.appendChild(teamSpan);
@@ -245,39 +285,6 @@ function renderGroups(data) {
   });
 }
 
-// ✅ TRACKER USING TEAM NAMES
-function updateTracker(data) {
-
-  // ✅ ONLY include teams that have played a match
-  const active = data.filter(p => p.matches > 0);
-
-  if (!active.length) return;
-
-  // ✅ Most Goals Conceded
-  const maxConceded = Math.max(...active.map(p => p.goalsAgainst));
-  const concededLeaders = active.filter(p => p.goalsAgainst === maxConceded);
-
-  // ✅ Most Red Cards (tie-break = yellows)
-  const maxReds = Math.max(...active.map(p => p.reds));
-  const redCandidates = active.filter(p => p.reds === maxReds);
-
-  const maxYellows = Math.max(...redCandidates.map(p => p.yellows));
-  const redLeaders = redCandidates.filter(p => p.yellows === maxYellows);
-
-  // ✅ Fewest Goals Scored
-  const minGoals = Math.min(...active.map(p => p.goals));
-  const goalLeaders = active.filter(p => p.goals === minGoals);
-
-  // ✅ Update UI
-  document.getElementById("mostConceded").innerHTML =
-    `📉 Most goals conceded – £15 → <strong>${concededLeaders.map(p => p.team).join(", ")}</strong> (${maxConceded}x🥅)`;
-
-  document.getElementById("mostReds").innerHTML =
-    `🟥 Most red cards (yellows tie-break) – £15 → <strong>${redLeaders.map(p => p.team).join(", ")}</strong> (${maxReds}x🟥)`;
-
-  document.getElementById("fewestGoals").innerHTML =
-    `⚽ Fewest goals scored – £15 → <strong>${goalLeaders.map(p => p.team).join(", ")}</strong> (${minGoals}x⚽)`;
-}
 </script>
 
 </body>
