@@ -177,7 +177,8 @@ fetch("sweepstake.csv?v=" + Date.now())
         goals: parseInt(parts[3]) || 0,
         yellows: parseInt(parts[4]) || 0,
         reds: parseInt(parts[5]) || 0,
-        goalsAgainst: parseInt(parts[6]) || 0
+        goalsAgainst: parseInt(parts[6]) || 0,
+        matches: parseInt(parts[7]) || 0
       };
     }).filter(p => p.name1 && p.team);
 
@@ -247,19 +248,27 @@ function renderGroups(data) {
 // ✅ TRACKER USING TEAM NAMES
 function updateTracker(data) {
 
-  if (!data.length) return;
+  // ✅ ONLY include teams that have played a match
+  const active = data.filter(p => p.matches > 0);
 
-  const maxConceded = Math.max(...data.map(p => p.goalsAgainst));
-  const concededLeaders = data.filter(p => p.goalsAgainst === maxConceded);
+  if (!active.length) return;
 
-  const maxReds = Math.max(...data.map(p => p.reds));
-  const redCandidates = data.filter(p => p.reds === maxReds);
+  // ✅ Most Goals Conceded
+  const maxConceded = Math.max(...active.map(p => p.goalsAgainst));
+  const concededLeaders = active.filter(p => p.goalsAgainst === maxConceded);
+
+  // ✅ Most Red Cards (tie-break = yellows)
+  const maxReds = Math.max(...active.map(p => p.reds));
+  const redCandidates = active.filter(p => p.reds === maxReds);
+
   const maxYellows = Math.max(...redCandidates.map(p => p.yellows));
   const redLeaders = redCandidates.filter(p => p.yellows === maxYellows);
 
-  const minGoals = Math.min(...data.map(p => p.goals));
-  const goalLeaders = data.filter(p => p.goals === minGoals);
+  // ✅ Fewest Goals Scored
+  const minGoals = Math.min(...active.map(p => p.goals));
+  const goalLeaders = active.filter(p => p.goals === minGoals);
 
+  // ✅ Update UI
   document.getElementById("mostConceded").innerHTML =
     `📉 Most goals conceded – £15 → <strong>${concededLeaders.map(p => p.team).join(", ")}</strong> (${maxConceded}x🥅)`;
 
