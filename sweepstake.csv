@@ -1,13 +1,13 @@
 Name1,Name2,Team,Goals,Yellows,Reds,goalsAgainst,matches
 Chris Hayes,Danny,Algeria,0,0,0,0,0
 Seb,Ant,Argentina,0,0,0,0,0
-Club,Adam B,Australia,0,0,0,0,0
+Club,Adam B,Australia,2,0,0,0,1
 Matt H,Zack M,Austria,0,0,0,0,0
 Harry K,Neil H,Belgium,0,0,0,0,0
-Marcus,Tel,Bosnia and Herzegovina,0,0,0,0,0
-Marcus,Hubbs,Brazil,0,0,0,0,0
+Marcus,Tel,Bosnia and Herzegovina,1,3,0,1,1
+Marcus,Hubbs,Brazil,1,2,0,1,1
 Kay,Wilks,Cabo Verde,0,0,0,0,0
-Jake,Haden,Canada,0,0,0,0,0
+Jake,Haden,Canada,1,2,0,1,1
 Steve G,Tom M,Colombia,0,0,0,0,0
 Adam W,Phil D,Croatia,0,0,0,0,0
 Matt S,Club,Curaçao,0,0,0,0,0
@@ -19,31 +19,31 @@ Ben B,Reece,England,0,0,0,0,0
 Ethan,Sam Fitz,France,0,0,0,0,0
 Joe K,Chris Healy,Germany,0,0,0,0,0
 Jez,Wilks,Ghana,0,0,0,0,0
-Parksey,Sam Fitz,Haiti,0,0,0,0,0
+Parksey,Sam Fitz,Haiti,0,1,0,1,1
 Chul,Tom M,IR Iran,0,0,0,0,0
 Adam W,Rehan,Iraq,0,0,0,0,0
 Jez,Haden,Ivory Coast,0,0,0,0,0
 Nic,Phil D,Japan,0,0,0,0,0
 Bradders,Reece,Jordan,0,0,0,0,0
 Club,Comhnall,Mexico,2,1,1,0,1
-Fraser R,Ben P,Morocco,0,0,0,0,0
+Fraser R,Ben P,Morocco,1,0,0,1,1
 Max,Parksey,Netherlands,0,0,0,0,0
 Harry K,Ben P,New Zealand,0,0,0,0,0
 Rico,Fraser W,Norway,0,0,0,0,0
 Joe K,Chris Healy,Panama,0,0,0,0,0
-Nic,Harry C,Paraguay,0,0,0,0,0
+Nic,Harry C,Paraguay,1,5,0,4,1
 Bradders,Rob Gee,Portugal,0,0,0,0,0
-Max,Joe K,Qatar,0,0,0,0,0
+Max,Joe K,Qatar,1,2,0,1,1
 Fraser R,Fraser W,Saudi Arabia,0,0,0,0,0
-Alex B,Hubbs,Scotland,0,0,0,0,0
+Alex B,Hubbs,Scotland,1,3,0,0,1
 Jake,Zack M,Senegal,0,0,0,0,0
 Seb,Club,South Africa,0,2,2,2,1
 Steve G,George,South Korea,2,1,0,1,1
 Parksey,Jon U,Spain,0,0,0,0,0
 Alex B,Wilks,Sweden,0,0,0,0,0
-Haden,Tristan,Switzerland,0,0,0,0,0
+Haden,Tristan,Switzerland,1,1,0,1,1
 Ben B,Ant,Tunisia,0,0,0,0,0
-Kay,Fergus,Türkiye,0,0,0,0,0
+Kay,Fergus,Türkiye,0,1,0,2,1
 Matt S,George,Uruguay,0,0,0,0,0
-Tom Gods,Joe K,USA,0,0,0,0,0
+Tom Gods,Joe K,USA,4,1,0,1,1
 Ethan,Jon U,Uzbekistan,0,0,0,0,0
